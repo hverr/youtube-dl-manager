@@ -21,6 +21,13 @@ class SourceCodeManager(object):
 
     def youtubeDLSourceFolder(self):
         return self._preferences.sourcepath + "/youtube-dl"
+
+    def youtubeDLIsInstalled(self):
+        try:
+            self.currentYoutubeDLVersion()
+        except FileNotFoundError:
+            return False
+        return True
     
     def currentYoutubeDLVersion(self):
         """Returns the version of youtube-dl installed in the system"""
