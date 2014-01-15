@@ -2,6 +2,7 @@ import urllib.request
 import tempfile
 import tarfile
 import shutil
+import sys
 import os
 import re
 
@@ -28,6 +29,9 @@ class SourceCodeManager(object):
         except FileNotFoundError:
             return False
         return True
+
+    def addYoutubeDLToPath(self):
+        sys.path.append(self.youtubeDLSourceFolder())
     
     def currentYoutubeDLVersion(self):
         """Returns the version of youtube-dl installed in the system"""
