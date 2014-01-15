@@ -3,6 +3,7 @@ import tempfile
 import tarfile
 import shutil
 import os
+import re
 
 class SourceCodeManager(object):
     YOUTUBE_DL_MASTER = "https://raw.github.com/rg3/youtube-dl/master"
@@ -23,6 +24,18 @@ class SourceCodeManager(object):
     
     def currentYoutubeDLVersion(self):
         """Returns the version of youtube-dl installed in the system"""
+        versionFile = self.youtubeDLSourceFolder() + "/youtube_dl/version.py"
+
+        fh = open(versionFile, "r")
+        try:
+            source = fh.read().strip()
+            return self.__extractYoutubeDLVersionFromString(source) 
+
+        except FileNotFoundError:
+            return None
+        finally:
+            fh.close()
+        
 
     def checkForYoutubeDLUpdates(self):
         """Checks for updates only when enabled in the preferences.
@@ -30,21 +43,40 @@ class SourceCodeManager(object):
         Raises exceptions on error:
           - urllib.request.URLError
           - ExtractionError: unable to extract the version string
+
+        Return value: True or False
         """
         if self._preferences.autoupdates == False:
-            return
+            return False
 
         # check for youtube-dl updates
         fh = urllib.request.urlopen(self.YOUTUBE_DL_VERSION_URL, timeout=5)
         try:
             html = fh.read().decode().strip()
-            s = re.search('((?:\d+\.){2}\d+)',html)
-            if s == None:
-                raise ExtractionError()
+            newVersion = self.__extractYoutubeDLVersionFromString(html)
             
         finally:
             fh.close()
-        return html
+
+        try:
+            currentVersion = self.currentYoutubeDLVersion()
+        except VersionExtractionError:
+            return True
+
+        return (currentVersion != newVersion)
+
+    def __extractYoutubeDLVersionFromString(self, s):
+        """Extracts the youtube-dl version string from s.
+
+        An example of a version string is 2014.01.08
+
+        This method raises an VersionExtractionError when the version
+        couldn't be extracted.
+        """
+        m = re.search('((?:\d+\.){2}\d+)',s)
+        if m == None:
+            raise VersionExtractionError()
+        return m.group(0)
 
     def downloadYoutubeDL(self):
         """Downloads and updates the youtube-dl source code on the system
@@ -93,7 +125,7 @@ class SourceCodeManager(object):
 
 
 ### Exceptions ###
-class ExtractionError(Exception):
+class VersionExtractionError(Exception):
     def __init__(self):
         super(Exception, self).__init__("could not extract version")
         
