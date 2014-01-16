@@ -36,7 +36,7 @@ class YoutubeDLEngine(YoutubeDL):
           - other: errors thrown by the youtube-dl source code
         """
         try:
-            return self.extract_info(url, False)
+            return self.extract_info(url, download=False)
         except (youtube_dl.DownloadError,
                 youtube_dl.utils.compat_urllib_error.URLError):
             raise UnsupportedURLError(url)
@@ -55,6 +55,17 @@ class YoutubeDLEngine(YoutubeDL):
             l[0].quality = MediaFormat.QUALITY_WORST
             l[-1].quality = MediaFormat.QUALITY_BEST
         return l
+
+    def downloadVideo(self, url, filename, formatID=None):
+        """Downloads the video at url to filename.
+
+        Returns True on succes, false if an error occurred.
+        """
+        self.params['outtmpl'] = filename
+        if formatID != None:
+            self.params['format'] = str(formatID)
+
+        return self.download([url]) == 0
 
 ### Exceptions ###
 class UnsupportedURLError(Exception):
