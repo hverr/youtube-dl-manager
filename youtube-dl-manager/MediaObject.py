@@ -20,14 +20,25 @@ class MediaObject(YoutubeDL):
         self.url = url
 
     # Intercept messages to the screen
-    def to_stdout(self, message, skipe_eol=False, check_quiet=False):
+    def to_stdout(self, message, skip_eol=False, check_quiet=False):
         """Intercepts the messages to the stdout"""
+        message = "STDOUT: " + message
+        super(MediaObject, self).to_stdout(message, skip_eol, check_quiet)
 
     def to_stderr(self, message):
         """Intercecpts the message to the stderr"""
+        message = "STDERR: " + message
+        super(MediaObject, self).to_stderr(message)
 
     def to_console_title(self, message):
         """Don't touch the console title"""
+
+    def trouble(self, message=None, tb=None):
+        """This method is called when trouble occurs."""
+        try:
+            super(MediaObject, self).trouble(message, tb)
+        except:
+            pass
 
     # Retreive information about the video
     def getMediaInformation(self):
@@ -63,6 +74,7 @@ class MediaObject(YoutubeDL):
         """Downloads the media at url to filename.
 
         Returns True on succes, false if an error occurred.
+
         """
         url = self.url
         self.params['outtmpl'] = filename
@@ -70,6 +82,7 @@ class MediaObject(YoutubeDL):
             self.params['format'] = str(formatID)
 
         return self.download([url]) == 0
+        
 
 ### Exceptions ###
 class UnsupportedURLError(Exception):
