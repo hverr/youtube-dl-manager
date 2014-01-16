@@ -5,17 +5,19 @@ from youtube_dl import YoutubeDL
 from MediaFormat import MediaFormat
 
 
-class YoutubeDLEngine(YoutubeDL):
+class MediaObject(YoutubeDL):
 
-    def __init__(self, params=None):
-        """Initialize a YoutubeDLEngine.
+    def __init__(self, url):
+        """Initialize a MediaObject.
 
         Calls the super's initializer, but also adds the default
-        InfoExtractors.
+        InfoExtractors and stores the url.
         """
-        super(YoutubeDLEngine, self).__init__(params)
+        super(MediaObject, self).__init__(None)
 
         self.add_default_info_extractors()
+
+        self.url = url
 
     # Intercept messages to the screen
     def to_stdout(self, message, skipe_eol=False, check_quiet=False):
@@ -28,13 +30,14 @@ class YoutubeDLEngine(YoutubeDL):
         """Don't touch the console title"""
 
     # Retreive information about the video
-    def getVideoInformation(self, url):
-        """Returns an information dictionary about a video.
+    def getMediaInformation(self):
+        """Returns an information dictionary about the media.
 
         Raises exceptions when an error occurs:
           - UnsupportedURLError: the url provided is not supported
           - other: errors thrown by the youtube-dl source code
         """
+        url = self.url
         try:
             return self.extract_info(url, download=False)
         except (youtube_dl.DownloadError,
@@ -42,7 +45,7 @@ class YoutubeDLEngine(YoutubeDL):
             raise UnsupportedURLError(url)
 
     def extractAvailableFormatsFromInfo(self, info_dict):
-        """Extracts the available format from a video information dictionary.
+        """Extracts the available format from a media information dictionary.
 
         This method will probably operate on the return value of
         getVideoInformation.
@@ -56,11 +59,12 @@ class YoutubeDLEngine(YoutubeDL):
             l[-1].quality = MediaFormat.QUALITY_BEST
         return l
 
-    def downloadVideo(self, url, filename, formatID=None):
-        """Downloads the video at url to filename.
+    def downloadMedia(self, filename, formatID=None):
+        """Downloads the media at url to filename.
 
         Returns True on succes, false if an error occurred.
         """
+        url = self.url
         self.params['outtmpl'] = filename
         if formatID != None:
             self.params['format'] = str(formatID)
