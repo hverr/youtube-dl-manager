@@ -1,7 +1,16 @@
+import curses
+
 from Screen import Screen
 
-
 class MainScreen(Screen):
+    # Drawing
     def display(self):
-        self.addstr(1,1,"Hello World")
+        self.__drawBox()
+
+    def __drawBox(self):
+        self.box()
+
+        title = "Youtube DL Manager"
+        y, x = self.absoluteCoordinates(0,3)
+        self.addstr(y, x, title, curses.A_BOLD)
     
