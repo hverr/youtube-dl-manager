@@ -54,9 +54,5 @@ class Screen(object):
     # Drawing
     def display(self):
         pass
-
-    def addstr(self, y, x, *args, **kwargs):
-        y, x = self.absoluteCoordinates(y, x)
-        self.actOnStdscr('addstr', y, x, *args, **kwargs)
             
         
