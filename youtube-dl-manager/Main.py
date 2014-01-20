@@ -1,12 +1,11 @@
 from Preferences import Preferences
 from SourceCodeManager import SourceCodeManager
 
-def main():
-    prefs = Preferences()
-    prefs.readPreferences()
-    scm = SourceCodeManager(prefs)
+from CursesApplication import CursesApplication
 
-    scm.downloadYoutubeDL()
+def main():
+    CursesApplication().run()
+
 
 if __name__ == "__main__":
     main()
