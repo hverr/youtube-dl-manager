@@ -34,13 +34,12 @@ class Screen(object):
                 
             return f(*args, **kwargs)
         
-        allowedNames = [
-            'getch',
-            'addstr'
-        ]
-        if funName in allowedNames:
+        try:
+            eval("self.stdscr." + funName)
             return actOnStdscr
-        return super(Screen, self).__getattr__(funName)
+        except AttributeError:
+            pass
+        raise AttributeError(funName)
 
     # Coordinate system
     def absoluteCoordinates(self, y, x):
