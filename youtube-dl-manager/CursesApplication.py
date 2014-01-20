@@ -1,5 +1,6 @@
 import curses
 
+from MainScreen import MainScreen
 
 
 class CursesApplication(object):
@@ -10,7 +11,9 @@ class CursesApplication(object):
         curses.wrapper(self.__cursesWrapper)
 
     def __cursesWrapper(self, stdscr):
-        stdscr.addstr(1,1, "Hello World!")
+        ms = MainScreen(None, (0,0))
+        ms.stdscr = stdscr
+        ms.display()
         stdscr.getch()
         
         
