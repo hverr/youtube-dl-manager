@@ -13,7 +13,7 @@ class CursesApplication(object):
     def __cursesWrapper(self, stdscr):
         ms = MainScreen(None, (0,0))
         ms.stdscr = stdscr
-        ms.display()
+        ms.update()
         stdscr.getch()
         
         
