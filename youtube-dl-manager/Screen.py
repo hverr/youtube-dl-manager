@@ -15,6 +15,7 @@ class Screen(object):
         self.parent = parent
         self.origin = relOrigin
         self.size = size
+        self.children = []
 
     # Accessing the stdscr
     def actOnStdscr(self, funName, *args, **kwargs):
@@ -41,17 +42,30 @@ class Screen(object):
             pass
         raise AttributeError(funName)
 
+    # Managing children
+    def addChild(self, c):
+        """Adds a child and sets its parent."""
+        c.parent = self
+        self.children.append(c)
+
     # Coordinate system
-    def absCoord(self, y, x):
+    def abs(self, y, x):
         """Calculates the coordinates of y and x in the curses screen."""
         y += self.origin[0]
         x += self.origin[1]
         if self.parent != None:
-            super(Screen, self).absCoord(y, x)
+            super(Screen, self).abs(y, x)
         return (y, x)
     
     # Drawing
+    def update(self):
+        """Issues the screen and all its children to display."""
+        self.display()
+        for child in self.children:
+            child.update()
+        
     def display(self):
+        """Don't call this function directly, call update!"""
         pass
             
         
