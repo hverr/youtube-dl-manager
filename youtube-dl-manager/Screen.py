@@ -42,12 +42,12 @@ class Screen(object):
         raise AttributeError(funName)
 
     # Coordinate system
-    def absoluteCoordinates(self, y, x):
+    def absCoord(self, y, x):
         """Calculates the coordinates of y and x in the curses screen."""
         y += self.origin[0]
         x += self.origin[1]
         if self.parent != None:
-            super(Screen, self).absoluteCoordinates(y, x)
+            super(Screen, self).absCoord(y, x)
         return (y, x)
     
     # Drawing

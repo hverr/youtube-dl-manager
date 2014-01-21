@@ -11,6 +11,6 @@ class MainScreen(Screen):
         self.box()
 
         title = "Youtube DL Manager"
-        y, x = self.absoluteCoordinates(0,3)
+        y, x = self.absCoord(0,3)
         self.addstr(y, x, title, curses.A_BOLD)
     
