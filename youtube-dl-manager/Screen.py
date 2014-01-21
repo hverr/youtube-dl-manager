@@ -17,6 +17,16 @@ class Screen(object):
         self.size = size
         self.children = []
 
+        self.initialize()
+
+    def initialize(self):
+        """Called when the screen is initialized.
+
+        This method is the prefered method to override if you have custom
+        initialization to do.
+        """
+        pass
+
     # Accessing the stdscr
     def actOnStdscr(self, funName, *args, **kwargs):
         if self.stdscr != None:
@@ -34,12 +44,16 @@ class Screen(object):
                 f = eval("self.parent." + funName)
                 
             return f(*args, **kwargs)
-        
+
         try:
             eval("self.stdscr." + funName)
             return actOnStdscr
         except AttributeError:
-            pass
+            try:
+                eval("self.parent." + funName)
+                return actOnStdscr
+            except AttributeError:
+                pass
         raise AttributeError(funName)
 
     # Managing children
@@ -54,7 +68,7 @@ class Screen(object):
         y += self.origin[0]
         x += self.origin[1]
         if self.parent != None:
-            super(Screen, self).abs(y, x)
+            self.parent.abs(y, x)
         return (y, x)
     
     # Drawing
@@ -67,5 +81,30 @@ class Screen(object):
     def display(self):
         """Don't call this function directly, call update!"""
         pass
+
+    def box(self, origin=(0,0), size=(None, None)):
+        y, x = origin
+        h, w = size
+        if h == None:
+            h = self.size[0]
+        if w == None:
+            w = self.size[1]
+
+        for i in range(x+1, x+w-1):
+            self.addch(y, i, curses.ACS_HLINE)
+            self.addch(y+h-1, i, curses.ACS_HLINE)
+
+        for i in range(y+1, y+h-1):
+            self.addch(i, x, curses.ACS_VLINE)
+            self.addch(i, x+w-1, curses.ACS_VLINE)
+
+        self.addch(y, x, curses.ACS_ULCORNER)
+        self.addch(y+h-1, x, curses.ACS_LLCORNER)
+        self.addch(y, x+w-1, curses.ACS_URCORNER)
+        try:
+            self.addch(y+h-1,x+w-1, curses.ACS_LRCORNER)
+        except: # curses bug
+            pass
+        
             
         
