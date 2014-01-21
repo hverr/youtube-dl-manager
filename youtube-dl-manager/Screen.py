@@ -83,7 +83,10 @@ class Screen(object):
         pass
 
     def box(self, origin=(0,0), size=(None, None)):
+        """Draws a box. The origin should be relative."""
+        
         y, x = origin
+        y, x = self.abs(y, x)
         h, w = size
         if h == None:
             h = self.size[0]
