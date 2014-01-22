@@ -57,6 +57,17 @@ class MultilineBox(Screen):
             line = self.lineAtIndex(lineIndex)
             self.drawLineAt(line, (y, 1), lineIndex == self.selectedLine)
 
+    # Events
+    def respondsTo(self, key):
+        allowed = [curses.KEY_DOWN, curses.KEY_UP]
+        return (key in allowed)
+
+    def handleEvent(self, key):
+        if key == curses.KEY_DOWN:
+            self.selectLine(self.selectedLine + 1)
+        elif key == curses.KEY_UP:
+            self.selectLine(self.selectedLine - 1)
+
         
     
 
