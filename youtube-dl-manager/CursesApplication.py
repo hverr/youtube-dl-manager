@@ -13,9 +13,9 @@ class CursesApplication(object):
 
     def __cursesWrapper(self, stdscr):
         size = stdscr.getmaxyx()
-        ms = MainScreen(None, (0,0), size)
-        ms.stdscr = stdscr
-        ms.makeFirstResponder()
+        self.mainScreen = MainScreen(None, (0,0), size)
+        self.mainScreen.stdscr = stdscr
+        self.mainScreen.makeFirstResponder()
 
         # Main runloop
         while True:
@@ -25,7 +25,7 @@ class CursesApplication(object):
             # Timing for debugging purposes
             time1 = time.time()
             
-            r = ms
+            r = self.mainScreen
             responders = [r]
             while True: 
                 r = r.parentResponder
