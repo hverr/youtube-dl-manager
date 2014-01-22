@@ -115,6 +115,10 @@ class MultilineBox(Screen):
             return numLines > self.selectedLine + 1
         elif key == curses.KEY_UP:
             return self.selectedLine - 1 >= 0
+        elif key == curses.KEY_NPAGE:
+            return numLines > self.selectedLine + 1
+        elif key == curses.KEY_PPAGE:
+            return self.selectedLine - 1 >= 0
         return False
 
     def handleEvent(self, key):
@@ -123,6 +127,18 @@ class MultilineBox(Screen):
             newLine = self.selectedLine + 1
         elif key == curses.KEY_UP:
             newLine = self.selectedLine - 1
+            
+        elif key == curses.KEY_NPAGE:
+            visible = self.size[0] - 2
+            numLines = self.numberOfLines()
+            newLine = self.selectedLine + visible
+            if newLine > numLines - 1:
+                newLine = numLines - 1
+        elif key == curses.KEY_PPAGE:
+            visible = self.size[0] - 2
+            newLine = self.selectedLine - visible
+            if newLine < 0:
+                newLine = 0
 
         endLine = self.__topLine + self.size[0] - 2
         if newLine < self.__topLine:
