@@ -44,7 +44,7 @@ class CursesApplication(object):
             # Next key
             time2 = time.time()
 
-            s = 'Handling key took %0.3f ms' % ((time2-time1)*1000.0)
+            s = 'Handling key %d took %0.3f ms' % (c, ((time2-time1)*1000.0))
             stdscr.addstr(size[0]-1, 0, s)
 
                 
