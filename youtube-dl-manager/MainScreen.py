@@ -24,4 +24,8 @@ class MainScreen(Screen):
         y, x = self.abs(0,3)
         self.addstr(y, x, title, curses.A_BOLD)
 
+    # Events
+    def acceptsFirstResponder(self):
+        return True
+
     
