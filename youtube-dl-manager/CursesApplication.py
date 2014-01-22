@@ -15,6 +15,31 @@ class CursesApplication(object):
         ms = MainScreen(None, (0,0), size)
         ms.stdscr = stdscr
         ms.update()
-        stdscr.getch()
+
+        # Main runloop
+        while True:
+            # List of responders
+            c = stdscr.getch()
+            
+            r = ms
+            responders = [r]
+            while True: 
+                r = r.parentResponder
+                if r != None:
+                    responders.append(r)
+                else:
+                    break
+
+            # Top down
+            for i in range(len(responders)-1, -1, -1):
+                r = responders[i]
+                if r.respondsTo(c):
+                    r.handleEvent(c)
+                    break
+                
+            # Next key
+
+                
+                    
         
         
