@@ -11,7 +11,8 @@ class CursesApplication(object):
         curses.wrapper(self.__cursesWrapper)
 
     def __cursesWrapper(self, stdscr):
-        ms = MainScreen(None, (0,0))
+        size = stdscr.getmaxyx()
+        ms = MainScreen(None, (0,0), size)
         ms.stdscr = stdscr
         ms.update()
         stdscr.getch()
