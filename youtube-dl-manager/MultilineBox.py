@@ -32,7 +32,7 @@ class MultilineBox(Screen):
         self.update()
 
     # Displaying
-    def drawLineAt(self, line, point):
+    def drawLineAt(self, line, point, selected=False):
         """Can be overridden if special drawing is needed.
 
         point - (y, x) relative coordinates
@@ -40,7 +40,10 @@ class MultilineBox(Screen):
         maxWidth = self.size[1] - 2
         line = line[:maxWidth]
         y, x = self.abs(point[0], point[1])
-        self.addstr(y, x, line)
+        attr = curses.A_NORMAL
+        if selected == True:
+            attr = curses.A_REVERSE
+        self.addstr(y, x, line, attr)
         
     def display(self):
         self.box()
@@ -52,7 +55,7 @@ class MultilineBox(Screen):
         for lineIndex in range(self.__topLine, endLine):
             y = lineIndex - self.__topLine + 1
             line = self.lineAtIndex(lineIndex)
-            self.drawLineAt(line, (y, 1))
+            self.drawLineAt(line, (y, 1), lineIndex == self.selectedLine)
 
         
     
