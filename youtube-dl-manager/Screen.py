@@ -95,6 +95,17 @@ class Screen(object):
         """
         pass
 
+    def clean(self):
+        """Cleans the whole screen.
+
+        Subclasses are encouraged to write custom methods that are more
+        efficient.
+        """
+        empty = ' '*self.size[1]
+        y, x = self.abs(0, 0)
+        for i in range(0, self.size[0]):
+            self.addstr(y+i, x, empty)
+
     def box(self, origin=(0,0), size=(None, None)):
         """Draws a box. The origin should be relative."""
         
