@@ -43,7 +43,10 @@ class MultilineBox(Screen):
     def display(self):
         self.box()
 
+        numLines = self.numberOfLines()
+
         endLine = self.__topLine + self.size[0] - 2 # not included
+        endLine = min(endLine, numLines)
         for lineIndex in range(self.__topLine, endLine):
             y = lineIndex - self.__topLine + 1
             line = self.lineAtIndex(lineIndex)
