@@ -10,12 +10,17 @@ class Screen(object):
         size - The size (height, width) of the screen.
 
         If this will be the root screen, please set stdscr accordingly.
+
+        self.parentResponder - The parent responder. The screen will first
+        try let this screen handle events. If it can't, it will handle the
+        events itself.
         """
         self.stdscr = None
         self.parent = parent
         self.origin = relOrigin
         self.size = size
         self.children = []
+        self.parentResponder = None
 
         self.initialize()
 
@@ -116,6 +121,27 @@ class Screen(object):
             self.addch(y+h-1,x+w-1, curses.ACS_LRCORNER)
         except: # curses bug
             pass
+
+    # Events
+    def respondsTo(self, key):
+        """This method will be called to check if the screen can handle a key.
+
+        If this method returns False, the screen calling this method will try
+        to handle the event itself. If this method returns True, the
+        handleEvent method will be called, and the event will be discarded.
+
+        key - The integer value returned by curses.getch
+        """
+        return False
+
+    def handleEvent(self, key):
+        """Handle an event.
+
+        This method will only be called if respondsTo returns True for the key.
+
+        key - The integer value returned by curses.getch
+        """
+        pass
         
             
         
