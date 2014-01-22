@@ -5,10 +5,13 @@ from QueueBox import QueueBox
 
 class MainScreen(Screen):
     def initialize(self):
-        self.queueBox = QueueBox(self, (2, 3), (8, 50))
+        self.queueBox = QueueBox(self, (1, 1))
         self.addChild(self.queueBox)
     
     # Drawing
+    def layout(self):
+        self.queueBox.size = [i-2 for i in self.size]
+        
     def display(self):
         self.size = self.stdscr.getmaxyx()
         self.__drawBox()
