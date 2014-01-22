@@ -15,7 +15,7 @@ class CursesApplication(object):
         size = stdscr.getmaxyx()
         ms = MainScreen(None, (0,0), size)
         ms.stdscr = stdscr
-        ms.update()
+        ms.makeFirstResponder()
 
         # Main runloop
         while True:
