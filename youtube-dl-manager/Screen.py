@@ -22,6 +22,11 @@ class Screen(object):
         self.children = []
         self.parentResponder = None
 
+        # This property only shows wether this screen is in
+        # the active responder chain. Use self.parentResponder
+        # to check if it is really at the top.
+        self.__isFirstResponder = False
+
         self.initialize()
 
     def initialize(self):
@@ -153,6 +158,64 @@ class Screen(object):
         key - The integer value returned by curses.getch
         """
         pass
+
+    def acceptsFirstResponder(self):
+        """Wether this widget accepts to be at the top of the responder chain.
+
+        Note: This method is used to skip elements when searching for a
+        first responder. If this method returns false. This screen AND its
+        children cannot receive events.
+        """
+        return True
+    
+    def makeFirstResponder(self, shouldUpdate=True):
+        """Make this screen and its children the first responder.
+
+        This method first tries to make a child the first responder. If
+        there is no child that accepts this, it tries to make the screen
+        itself the first responder. If that doesn't work False is returned.
+
+        Return value: True or False
+        """
+        if not self.acceptsFirstResponder():
+            return False
+
+        if self.__isFirstResponder:
+            return True
+        
+        self.__isFirstResponder = True
+        childFound = False
+        for c in self.children:
+            if c.acceptsFirstResponder:
+                self.parentResponder = c
+                if c.makeFirstResponder(False):
+                    childFound = True
+                    break
+
+        # No suitable child was found, we are at the top
+        if childFound == False:
+            self.parentResponder = None
+
+        if shouldUpdate:
+            self.update()
+        return True
+
+    def resignFirstResponder(self, shouldUpdate=True):
+        """Stop being the first responder."""
+        if self.acceptsFirstResponder() == False:
+            return
+
+        self.__isFirstResponder = False
+        if self.parentResponder != None:
+            self.parentResponder.resignFirstResponder(False)
+
+        if shouldUpdate:
+            self.update()
+
+    def isFirstResponder(self):
+        return self.__isFirstResponder
+    
+        
         
             
         
