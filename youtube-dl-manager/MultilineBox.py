@@ -1,9 +1,11 @@
+import curses
+
 from Screen import Screen
 
 class MultilineBox(Screen):
     def initialize(self):
         self.__topLine = 0
-        self.selectedRow = 0
+        self.selectedLine = 0
         
     # Data management
     def numberOfLines(self):
@@ -20,13 +22,13 @@ class MultilineBox(Screen):
         """
         return None
 
-    def selectRow(self, index):
+    def selectLine(self, index):
         """Selects a row and redraws."""
         numLines = self.numberOfLines()
         if index >= numLines or index < 0:
             raise IndexError(index)
 
-        self.selectedRow = index
+        self.selectedLine = index
         self.update()
 
     # Displaying
