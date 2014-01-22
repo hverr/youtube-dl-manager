@@ -74,12 +74,20 @@ class Screen(object):
     # Drawing
     def update(self):
         """Issues the screen and all its children to display."""
+        self.layout()
         self.display()
         for child in self.children:
             child.update()
         
     def display(self):
         """Don't call this function directly, call update!"""
+        pass
+
+    def layout(self):
+        """Subclasses should override this function to layout it's children.
+
+        Don't call this function directly, call upate!
+        """
         pass
 
     def box(self, origin=(0,0), size=(None, None)):
