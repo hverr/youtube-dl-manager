@@ -6,12 +6,16 @@ from QueueBox import QueueBox
 class MainScreen(Screen):
     def initialize(self):
         self.queueBox = QueueBox(self, (1, 1))
+        self.queueBox2 = QueueBox(self, (10, 1))
         self.addChild(self.queueBox)
-        self.parentResponder = self.queueBox
+        self.addChild(self.queueBox2)
+
+        self.automaticallyCycleThroughChildren = True
     
     # Drawing
     def layout(self):
-        self.queueBox.size = [i-2 for i in self.size]
+        self.queueBox.size = (int(self.size[0]/3), self.size[1]-2)
+        self.queueBox2.size = (int(self.size[0]/3), self.size[1]-2)
         
     def display(self):
         self.size = self.stdscr.getmaxyx()
