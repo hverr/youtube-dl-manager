@@ -5,6 +5,8 @@ from MainScreen import MainScreen
 
 
 class CursesApplication(object):
+    MIN_SIZE = (80,24)
+    
     def __init__(self):
         pass
 
@@ -21,6 +23,9 @@ class CursesApplication(object):
         while True:
             # List of responders
             c = stdscr.getch()
+            if c == curses.KEY_RESIZE:
+                self.__handleTerminalResize()
+                continue
 
             # Timing for debugging purposes
             time1 = time.time()
@@ -46,6 +51,22 @@ class CursesApplication(object):
 
             s = 'Handling key %d took %0.3f ms' % (c, ((time2-time1)*1000.0))
             stdscr.addstr(size[0]-1, 0, s)
+
+    def __handleTerminalResize(self):
+        newSize = self.mainScreen.stdscr.getmaxyx()
+        while newSize[0] < self.MIN_SIZE[1] or newSize[1] < self.MIN_SIZE[0]:
+            self.mainScreen.stdscr.clear()
+            error = "The minimal terminal size is " + str(self.MIN_SIZE)
+            error = error[:newSize[1]]
+            if newSize[1] > 1:
+                self.mainScreen.stdscr.addstr(0, 0, error)
+
+            self.mainScreen.stdscr.getch()
+            newSize = self.mainScreen.stdscr.getmaxyx()
+            
+        self.mainScreen.size = newSize
+        self.mainScreen.clear()
+        self.mainScreen.update()
 
                 
                     
