@@ -46,16 +46,67 @@ class MultilineBox(Screen):
         self.addstr(y, x, line, attr)
         
     def display(self):
+        self.clean()
         self.box()
 
         numLines = self.numberOfLines()
 
         endLine = self.__topLine + self.size[0] - 2 # not included
         endLine = min(endLine, numLines)
+            
         for lineIndex in range(self.__topLine, endLine):
             y = lineIndex - self.__topLine + 1
             line = self.lineAtIndex(lineIndex)
-            self.drawLineAt(line, (y, 1), lineIndex == self.selectedLine)
+            isSelected = lineIndex == self.selectedLine
+            self.drawLineAt(line, (y, 1), isSelected)
+
+        if self.__shouldDrawScroller(numLines):
+            self.__drawScroller(numLines)
+
+    def __shouldDrawScroller(self, numLines):
+        return (self.__canScrollDown(numLines) or self.__canScrollUp())
+
+    def __canScrollDown(self, numLines):
+        endLine = self.__topLine + self.size[0] - 3 # included
+        return endLine < numLines - 1
+
+    def __canScrollUp(self):
+        return self.__topLine > 0
+
+    def __drawScroller(self, numLines):
+        self.__cleanScrollArea()
+        
+        x = self.size[1] - 2
+
+        y, x = self.abs(1, x)
+        self.addch(y, x, "\u25B2")
+
+        y = self.abs(self.size[0] - 2, 0)[0]
+        self.addch(y, x, "\u25BC")
+
+        endLine = self.__topLine + self.size[0] - 3 #included
+
+        visible = endLine - self.__topLine + 1
+        scrollerLen = int(visible/numLines * (visible - 2))
+        if scrollerLen == 0:
+            scrollerLen = 1
+        
+        
+        y = round(self.__topLine/numLines * (visible - 2))
+        y = y + 2
+        if y + scrollerLen - 1 > self.size[0] - 3 or endLine == numLines - 1:
+            y = self.size[0] - 2 - scrollerLen
+
+        y = self.abs(y, 0)[0]
+        for i in range(0, scrollerLen):
+            self.addch(y+i, x, curses.ACS_VLINE)
+
+    def __cleanScrollArea(self):
+        x = self.size[1] - 2
+        y, x = self.abs(1, x)
+        for i in range(0, self.size[0]-2):
+            self.addch(y, x, ' ')
+        
 
     # Events
     def respondsTo(self, key):
@@ -67,10 +118,19 @@ class MultilineBox(Screen):
         return False
 
     def handleEvent(self, key):
+        newLine = -1
         if key == curses.KEY_DOWN:
-            self.selectLine(self.selectedLine + 1)
+            newLine = self.selectedLine + 1
         elif key == curses.KEY_UP:
-            self.selectLine(self.selectedLine - 1)
+            newLine = self.selectedLine - 1
+
+        endLine = self.__topLine + self.size[0] - 2
+        if newLine < self.__topLine:
+            self.__topLine = newLine
+        if endLine <= newLine:
+            self.__topLine = newLine - self.size[0] + 3
+
+        self.selectLine(newLine)
 
         
     
