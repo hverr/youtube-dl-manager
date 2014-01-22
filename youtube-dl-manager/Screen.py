@@ -1,4 +1,7 @@
 import curses
+import curses.ascii
+
+MAC_OS_SHIFT_TAB = 353
 
 class Screen(object):
     def __init__(self, parent, relOrigin, size=(None, None)):
@@ -21,6 +24,10 @@ class Screen(object):
         self.size = size
         self.children = []
         self.parentResponder = None
+
+        # Wether the screen should try and cycle between
+        # the children when Tab and Arrow keys are used.
+        self.automaticallyCycleThroughChildren = False
 
         # This property only shows wether this screen is in
         # the active responder chain. Use self.parentResponder
@@ -148,6 +155,19 @@ class Screen(object):
 
         key - The integer value returned by curses.getch
         """
+        if self.automaticallyCycleThroughChildren:
+            nextKeys = [curses.ascii.TAB,
+                        curses.KEY_RIGHT,
+                        curses.KEY_DOWN]
+            prevKeys = [curses.ascii.DEL,
+                        curses.KEY_UP,
+                        curses.KEY_LEFT,
+                        MAC_OS_SHIFT_TAB]
+            if key in nextKeys:
+                return self.__hasNextChildForFirstResponder()
+            elif key in prevKeys:
+                return self.__hasPreviousChildForFirstResponder()
+        
         return False
 
     def handleEvent(self, key):
@@ -157,7 +177,90 @@ class Screen(object):
 
         key - The integer value returned by curses.getch
         """
-        pass
+        if self.automaticallyCycleThroughChildren:
+            nextKeys = [curses.ascii.TAB,
+                        curses.KEY_RIGHT,
+                        curses.KEY_DOWN]
+            prevKeys = [curses.ascii.DEL,
+                        curses.KEY_UP,
+                        curses.KEY_LEFT,
+                        MAC_OS_SHIFT_TAB]
+            if key in nextKeys:
+                return self.__makeNextChildFirstResponder()
+            elif key in prevKeys:
+                return self.__makePreviousChildFirstResponder()
+
+    def __hasNextChildForFirstResponder(self):
+        nextFirst = self.__getNextChildForFirstResponder()[1]
+        return nextFirst != None
+
+    def __makeNextChildFirstResponder(self):
+        curFirst, nextFirst = self.__getNextChildForFirstResponder()
+
+        curFirst.resignFirstResponder()
+        nextFirst.makeFirstResponder()
+        self.parentResponder = nextFirst
+
+    def __getNextChildForFirstResponder(self):
+        """Returns the current and the next first responder.
+
+        The return value is a tuple of the current child that is the
+        first responder or None and the child that is suitable as the
+        next first responder or None.
+        """
+        curFirst = None
+        index = 0
+        for child in self.children:
+            if child.isFirstResponder():
+                curFirst = child
+                break
+            index += 1
+        if curFirst == None:
+            index = -1
+
+
+        nextFirst = None
+        for i in range(index + 1, len(self.children)):
+            child = self.children[i]
+            if child.acceptsFirstResponder():
+                nextFirst = child
+                break
+
+        return (curFirst, nextFirst)
+
+    def __hasPreviousChildForFirstResponder(self):
+        prevFirst = self.__getPreviousChildForFirstResponder()[1]
+        return prevFirst != None
+
+    def __makePreviousChildFirstResponder(self):
+        curFirst, prevFirst = self.__getPreviousChildForFirstResponder()
+        curFirst.resignFirstResponder()
+        prevFirst.makeFirstResponder()
+        self.parentResponder = prevFirst
+
+    def __getPreviousChildForFirstResponder(self):
+        """Returns the current and the previous first responder.
+
+        See __getNextChildForFirstResponder
+        """
+        curFirst = None
+        index = 0
+        for child in self.children:
+            if child.isFirstResponder():
+                curFirst = child
+                break
+            index += 1
+        if curFirst == None:
+            index = len(self.children)
+
+        prevFirst = None
+        for i in range(index - 1, -1, -1):
+            child = self.children[i]
+            if child.acceptsFirstResponder():
+                prevFirst = child
+                break
+        return (curFirst, prevFirst)
+        
 
     def acceptsFirstResponder(self):
         """Wether this widget accepts to be at the top of the responder chain.
