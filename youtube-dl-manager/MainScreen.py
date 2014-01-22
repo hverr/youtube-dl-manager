@@ -7,6 +7,7 @@ class MainScreen(Screen):
     def initialize(self):
         self.queueBox = QueueBox(self, (1, 1))
         self.addChild(self.queueBox)
+        self.parentResponder = self.queueBox
     
     # Drawing
     def layout(self):
