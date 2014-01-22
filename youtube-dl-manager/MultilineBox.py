@@ -59,8 +59,12 @@ class MultilineBox(Screen):
 
     # Events
     def respondsTo(self, key):
-        allowed = [curses.KEY_DOWN, curses.KEY_UP]
-        return (key in allowed)
+        numLines = self.numberOfLines()
+        if key == curses.KEY_DOWN:
+            return numLines > self.selectedLine + 1
+        elif key == curses.KEY_UP:
+            return self.selectedLine - 1 >= 0
+        return False
 
     def handleEvent(self, key):
         if key == curses.KEY_DOWN:
