@@ -42,7 +42,9 @@ class MultilineBox(Screen):
         y, x = self.abs(point[0], point[1])
         attr = curses.A_NORMAL
         if selected == True:
-            attr = curses.A_REVERSE
+            attr = curses.A_BOLD
+            if self.isFirstResponder():
+                attr = attr | curses.A_REVERSE
         self.addstr(y, x, line, attr)
         
     def display(self):
@@ -109,6 +111,9 @@ class MultilineBox(Screen):
         
 
     # Events
+    def acceptsFirstResponder(self):
+        return True
+    
     def respondsTo(self, key):
         numLines = self.numberOfLines()
         if key == curses.KEY_DOWN:
