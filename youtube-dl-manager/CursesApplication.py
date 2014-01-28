@@ -14,9 +14,11 @@ class CursesApplication(object):
         curses.wrapper(self.__cursesWrapper)
 
     def __cursesWrapper(self, stdscr):
-        size = stdscr.getmaxyx()
-        self.mainScreen = MainScreen(None, (0,0), size)
+        self.mainScreen = MainScreen(None, (0,0))
         self.mainScreen.stdscr = stdscr
+
+        # Make sure the terminal has enough space
+        self.__handleTerminalResize(False)
         self.mainScreen.makeFirstResponder()
 
         # Main runloop
@@ -49,10 +51,11 @@ class CursesApplication(object):
             # Next key
             time2 = time.time()
 
+            size = stdscr.getmaxyx()
             s = 'Handling key %d took %0.3f ms' % (c, ((time2-time1)*1000.0))
             stdscr.addstr(size[0]-1, 0, s)
 
-    def __handleTerminalResize(self):
+    def __handleTerminalResize(self, shouldRedraw=True):
         newSize = self.mainScreen.stdscr.getmaxyx()
         while newSize[0] < self.MIN_SIZE[1] or newSize[1] < self.MIN_SIZE[0]:
             self.mainScreen.stdscr.clear()
@@ -65,8 +68,9 @@ class CursesApplication(object):
             newSize = self.mainScreen.stdscr.getmaxyx()
             
         self.mainScreen.size = newSize
-        self.mainScreen.clear()
-        self.mainScreen.update()
+        if shouldRedraw:
+            self.mainScreen.clear()
+            self.mainScreen.update()
 
                 
                     
