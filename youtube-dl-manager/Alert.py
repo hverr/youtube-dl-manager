@@ -136,14 +136,7 @@ class Alert(Screen):
                 break
 
         if foundButton:
-            # resign current
-            for b in self.buttons:
-                if b.isFirstResponder():
-                    b.resignFirstResponder()
-
-            # make first responder
-            foundButton.makeFirstResponder()
-            return
+            self.makeChildFirstResponder(foundButton)
 
         # No button found
         return super(Alert, self).handleEvent(key)
