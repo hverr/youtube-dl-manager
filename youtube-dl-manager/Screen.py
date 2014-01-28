@@ -202,6 +202,35 @@ class Screen(object):
             elif key in prevKeys:
                 return self.__makePreviousChildFirstResponder()
 
+    def makeChildFirstResponder(self, c, shouldUpdate=True):
+        """Makes a child the first responder, after resigning the current.
+
+        A screen must be a first responder itself, to be allowed to do this.
+        """
+
+        try:
+            self.children.index(c)
+        except ValueError:
+            raise Exception("Child not found")
+
+        if self.isFirstResponder() == False:
+            raise Exception("Not in the responder chain")
+
+        curFirst = None
+        for child in self.children:
+            if child.isFirstResponder():
+                curFirst = child
+                break
+
+        if c == curFirst:
+            return
+
+        if curFirst != None:
+            curFirst.resignFirstResponder(shouldUpdate)
+        if c != None:
+            c.makeFirstResponder(shouldUpdate)
+        self.parentResponder = c
+
     def __hasNextChildForFirstResponder(self):
         nextFirst = self.__getNextChildForFirstResponder()[1]
         return nextFirst != None
