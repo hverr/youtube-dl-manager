@@ -79,6 +79,18 @@ class Screen(object):
         c.parent = self
         self.children.append(c)
 
+    def removeChild(self, c):
+        """Removes a child and unsets its parent.
+
+        This method does not throw an error when the child can't be found.
+        """
+        try:
+            i = self.children.index(c)
+            c.parent = None
+            del self.children[i]
+        except ValueError:
+            pass
+
     # Coordinate system
     def abs(self, y, x):
         """Calculates the coordinates of y and x in the curses screen."""
