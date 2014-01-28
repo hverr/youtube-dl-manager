@@ -14,6 +14,8 @@ class CursesApplication(object):
         curses.wrapper(self.__cursesWrapper)
 
     def __cursesWrapper(self, stdscr):
+        curses.curs_set(0) # No cursor
+        
         self.mainScreen = MainScreen(None, (0,0))
         self.mainScreen.stdscr = stdscr
 
