@@ -85,7 +85,7 @@ class Screen(object):
         y += self.origin[0]
         x += self.origin[1]
         if self.parent != None:
-            self.parent.abs(y, x)
+            y, x = self.parent.abs(y, x)
         return (y, x)
     
     # Drawing
