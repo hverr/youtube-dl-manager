@@ -34,6 +34,10 @@ class Screen(object):
         # to check if it is really at the top.
         self.__isFirstResponder = False
 
+        # Used to manage model sessions
+        self.__modalScreens = []
+        self.__firstResponderPreModalScreen = None
+
         self.initialize()
 
     def initialize(self):
@@ -167,7 +171,8 @@ class Screen(object):
 
         key - The integer value returned by curses.getch
         """
-        if self.automaticallyCycleThroughChildren:
+        cycle = self.automaticallyCycleThroughChildren
+        if cycle and self.activeModalSession() == None:
             nextKeys = [curses.ascii.TAB,
                         curses.KEY_RIGHT,
                         curses.KEY_DOWN]
@@ -189,7 +194,8 @@ class Screen(object):
 
         key - The integer value returned by curses.getch
         """
-        if self.automaticallyCycleThroughChildren:
+        cycle = self.automaticallyCycleThroughChildren
+        if cycle and self.activeModalSession() == None:
             nextKeys = [curses.ascii.TAB,
                         curses.KEY_RIGHT,
                         curses.KEY_DOWN]
@@ -358,6 +364,46 @@ class Screen(object):
 
     def isFirstResponder(self):
         return self.__isFirstResponder
+
+    # Modal Screens
+    def beginModalScreen(self, screen):
+        """Begins a modal session with the screen as the modal window.
+
+        Each session must be ended with a corresponding call to
+        endModalScreen. Multiple modal sessions can be up at the same
+        time, but must be ended in the reverse order they were started.
+        """
+        self.__modalScreens.append(screen)
+        self.addChild(screen)
+
+        if self.parentResponder != None:
+            self.__parentResponderPreModalScreen = self.parentResponder
+
+        self.makeChildFirstResponder(screen, False)
+        self.update()
+
+    def endModalScreen(self, screen):
+        """Ends a modal session.
+
+        The session being ended must be at the top of the modal session stack.
+        """
+        if self.__modalScreens[-1] != screen:
+            raise Exception("Screen not at top of modal session stack.")
+
+        del self.__modalScreens[-1]
+        self.makeChildFirstResponder(self.__parentResponderPreModalScreen,
+                                     False)
+        self.removeChild(screen)
+        self.update()
+
+        
+
+    def activeModalSession(self):
+        if len(self.__modalScreens) == 0:
+            return None
+        return self.__modalScreens[-1]
+
+        
     
         
         
