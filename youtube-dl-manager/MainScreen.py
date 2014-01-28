@@ -2,6 +2,8 @@ import curses
 
 from Screen import Screen
 from QueueBox import QueueBox
+from Alert import Alert
+from Button import Button
 
 class MainScreen(Screen):
     def initialize(self):
@@ -9,6 +11,10 @@ class MainScreen(Screen):
         self.queueBox2 = QueueBox(self, (10, 1))
         self.addChild(self.queueBox)
         self.addChild(self.queueBox2)
+
+        self.alert = Alert(self)
+        self.alert.addButton(Button("OK", self.endAlert, Button.SHORTCUT_ENTER))
+        self.alert.addButton(Button("Cancel", None, 'c'))
 
         self.automaticallyCycleThroughChildren = True
     
@@ -21,6 +27,7 @@ class MainScreen(Screen):
         self.size = self.stdscr.getmaxyx()
         self.__drawBox()
 
+
     def __drawBox(self):
         self.box()
 
@@ -31,5 +38,20 @@ class MainScreen(Screen):
     # Events
     def acceptsFirstResponder(self):
         return True
+
+    def respondsTo(self, key):
+        if chr(key) == 'a':
+            return True
+        return super(MainScreen, self).respondsTo(key)
+
+    def handleEvent(self, key):
+        if chr(key) == 'a':
+            self.beginModalScreen(self.alert)
+            return True
+
+        return super(MainScreen, self).handleEvent(key)
+
+    def endAlert(self):
+        self.endModalScreen(self.alert)
 
     
