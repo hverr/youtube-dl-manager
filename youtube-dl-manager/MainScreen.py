@@ -24,6 +24,7 @@ class MainScreen(Screen):
         self.queueBox2.size = (int(self.size[0]/3), self.size[1]-2)
         
     def display(self):
+        self.clear()
         self.size = self.stdscr.getmaxyx()
         self.__drawBox()
 
