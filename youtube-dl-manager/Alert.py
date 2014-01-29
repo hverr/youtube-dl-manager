@@ -70,27 +70,6 @@ class Alert(Screen):
         self.clean()
         self.box()
 
-    def __drawButtons(self):
-        y, x = self.abs(self.size[0] - 2, self.size[1] - 2)
-        for b in self.buttons:
-            title = str(b[0])
-            shortcut = b[2]
-
-            x -= (3 + len(title))
-            s = "<" + title + ">"
-            attr = curses.A_NORMAL
-
-            # Draw title
-            if shortcut in [self.SHORTCUT_ENTER, self.SHORTCUT_ENTER2]:
-                attr = attr | curses.A_BOLD
-            self.addstr(y, x, s, attr)
-
-            # Underline shortcut
-            sp = self.__shortcutPosition(title, shortcut)
-            if sp != None:
-                attr = attr | curses.A_UNDERLINE
-                self.addch(y, x + sp + 1, title[sp], attr)
-
     def __shortcutPosition(self, title, shortcut):
         i = 0
         shortcut = shortcut.lower()
