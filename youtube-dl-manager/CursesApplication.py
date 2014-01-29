@@ -46,6 +46,9 @@ class CursesApplication(object):
             # Top down
             for i in range(len(responders)-1, -1, -1):
                 r = responders[i]
+                if r.activeModalSession() != None:
+                    break
+                
                 if r.respondsTo(c):
                     r.handleEvent(c)
                     break
