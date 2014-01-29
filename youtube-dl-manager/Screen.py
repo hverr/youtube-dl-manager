@@ -346,14 +346,13 @@ class Screen(object):
         childFound = False
         for c in self.children:
             if c.acceptsFirstResponder:
-                self.parentResponder = c
-                if c.makeFirstResponder(False):
-                    childFound = True
-                    break
+                self.makeChildFirstResponder(c, False)
+                childFound = True
+                break
 
         # No suitable child was found, we are at the top
         if childFound == False:
-            self.parentResponder = None
+            self.makeChildFirstResponder(None, False)
 
         if shouldUpdate:
             self.update()
