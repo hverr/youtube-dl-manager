@@ -19,6 +19,9 @@ class Button(Screen):
                 s += str(shortcut) + "'"
         self.shortcut = shortcut
 
+    def __repr__(self):
+        return super(Button, self).__repr__() + "(<" + str(self.title) + ">)"
+
     # Drawing
     def neededWidth(self):
         return 2 + len(str(self.title))
