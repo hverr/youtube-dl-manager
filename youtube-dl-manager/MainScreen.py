@@ -2,8 +2,7 @@ import curses
 
 from Screen import Screen
 from QueueBox import QueueBox
-from Alert import Alert
-from Button import Button
+from VideoURLDialog import VideoURLDialog
 
 class MainScreen(Screen):
     def initialize(self):
@@ -12,9 +11,7 @@ class MainScreen(Screen):
         self.addChild(self.queueBox)
         self.addChild(self.queueBox2)
 
-        self.alert = Alert(self)
-        self.alert.addButton(Button("OK", self.endAlert, Button.SHORTCUT_ENTER))
-        self.alert.addButton(Button("Cancel", None, 'c'))
+        self.alert = VideoURLDialog(self)
 
         self.automaticallyCycleThroughChildren = True
     
