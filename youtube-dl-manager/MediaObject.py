@@ -19,14 +19,26 @@ class MediaObject(YoutubeDL):
 
         self.url = url
 
+        # You can set this to something that responds to the following
+        # methods:
+        #  - mediaObjectMessage(msg)
+        #  - mediaObjectError(err)
+        self.delegate = None
+
     # Intercept messages to the screen
     def to_stdout(self, message, skip_eol=False, check_quiet=False):
         """Intercepts the messages to the stdout"""
-        pass
+        try:
+            self.delegate.mediaObjectMessage(message)
+        except AttributeError:
+            pass
 
     def to_stderr(self, message):
         """Intercecpts the message to the stderr"""
-        pass
+        try:
+            self.delegate.mediaObjectError(message)
+        except AttributeError:
+            pass
 
     def to_console_title(self, message):
         """Don't touch the console title"""
@@ -36,7 +48,7 @@ class MediaObject(YoutubeDL):
         try:
             super(MediaObject, self).trouble(message, tb)
         except:
-            pass
+            raise
 
     # Retreive information about the video
     def getMediaInformation(self):
