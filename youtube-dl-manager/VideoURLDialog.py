@@ -4,6 +4,7 @@ from Alert import Alert
 from TextField import TextField
 from Button import Button
 from MessageAlert import MessageAlert
+from ChooseDetailsDialog import ChooseDetailsDialog
 
 from MediaObject import (MediaObject, UnsupportedURLError)
 
@@ -74,6 +75,11 @@ class VideoURLDialog(Alert):
             t = "Could not extract information."
             m = "Invalid URL or video hash."
             self.__handleError(t, m)
+            return
+
+        # Choose details
+        self.chooseDetailsDialog = ChooseDetailsDialog(self, mo, info)
+        self.beginModalScreen(self.chooseDetailsDialog)
 
     def __handleError(self, title, msg):
         self.errorAlert = MessageAlert(self.parent, title, msg)
