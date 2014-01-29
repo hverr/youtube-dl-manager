@@ -42,6 +42,11 @@ class Alert(Screen):
             self.children.insert(insertIndex, c)
 
     # Drawing
+    def abs(self, y, x):
+        y += self.origin[0]
+        x += self.origin[1]
+        return (y, x)
+    
     def layout(self):
         # We go in the middle of the terminal
         # We are obnoxious
