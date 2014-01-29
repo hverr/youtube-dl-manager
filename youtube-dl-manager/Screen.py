@@ -408,7 +408,13 @@ class Screen(object):
             self.makeChildFirstResponder(self.__parentResponderPreModalScreen,
                                          False)
         self.removeChild(screen)
-        self.update()
+
+        # We want to update the whole terminal
+        # Modal sessions are special
+        r = self
+        while r.parent != None:
+            r = r.parent
+        r.update()
 
 
     def activeModalSession(self):
