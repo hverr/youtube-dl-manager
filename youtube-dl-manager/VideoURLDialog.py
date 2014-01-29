@@ -8,13 +8,15 @@ from MessageAlert import MessageAlert
 from MediaObject import (MediaObject, UnsupportedURLError)
 
 class VideoURLDialog(Alert):
-    CONTENT_HEIGHT = 4
+    CONTENT_HEIGHT = 6
 
     def initialize(self):
         super(VideoURLDialog, self).initialize()
 
         self.textField = TextField(self, (3, 2))
         self.addChild(self.textField)
+
+        self.__progressMessage = None
 
         self.addButton(Button("OK", self.handleOK, Button.SHORTCUT_ENTER))
         self.addButton(Button("Cancel", self.handleCancel, 'c'))
@@ -31,6 +33,19 @@ class VideoURLDialog(Alert):
         y, x = self.abs(1, 1)
         self.addstr(y, x, "Video URL or YouTube hash:")
 
+        self.__drawProgressMessage()
+
+    def __drawProgressMessage(self):
+        y, x = self.abs(5, 1)
+        w = (self.size[1] - 2)
+        self.addstr(y, x, ' '*w)
+        
+        if self.__progressMessage != None:
+            y, x = self.abs(5, 1)
+            self.addstr(y, x, self.__progressMessage[:w])
+                    
+        self.refresh()
+
     # Events
     def handleOK(self):
         self.__handleURL(self.textField.getValue())
@@ -43,6 +58,7 @@ class VideoURLDialog(Alert):
         invalidURL = False
         try:
             mo = MediaObject(url)
+            mo.delegate = self
             info = mo.getMediaInformation()
 
             if info == None:
@@ -50,6 +66,9 @@ class VideoURLDialog(Alert):
             
         except UnsupportedURLError:
             invalidURL = True
+        finally:
+            self.__progressMessage = None
+            self.update()
 
         if invalidURL == True:
             t = "Could not extract information."
@@ -66,6 +85,15 @@ class VideoURLDialog(Alert):
 
     def __handleErrorOK(self):
         self.parent.endModalScreen(self.errorAlert)
+
+    # Media Object delegate
+    def mediaObjectMessage(self, msg):
+        self.__progressMessage = msg
+        self.__drawProgressMessage()
+
+    def mediaObjectError(self, msg):
+        self.__progressMessage = msg
+        self.__drawProgressMessage()
         
             
         
