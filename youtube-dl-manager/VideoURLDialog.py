@@ -3,6 +3,9 @@ from Alert import Alert
 
 from TextField import TextField
 from Button import Button
+from MessageAlert import MessageAlert
+
+from MediaObject import (MediaObject, UnsupportedURLError)
 
 class VideoURLDialog(Alert):
     CONTENT_HEIGHT = 4
@@ -30,7 +33,39 @@ class VideoURLDialog(Alert):
 
     # Events
     def handleOK(self):
-        pass
+        self.__handleURL(self.textField.getValue())
+        
 
     def handleCancel(self):
-        pass
+        self.parent.endModalScreen(self)
+
+    def __handleURL(self, url):
+        invalidURL = False
+        try:
+            mo = MediaObject(url)
+            info = mo.getMediaInformation()
+
+            if info == None:
+                raise UnsupportedURLError(url)
+            
+        except UnsupportedURLError:
+            invalidURL = True
+
+        if invalidURL == True:
+            t = "Could not extract information."
+            m = "Invalid URL or video hash."
+            self.__handleError(t, m)
+
+    def __handleError(self, title, msg):
+        self.errorAlert = MessageAlert(self.parent, title, msg)
+
+        b = Button("OK", self.__handleErrorOK, Button.SHORTCUT_ENTER)
+        self.errorAlert.addButton(b)
+        
+        self.parent.beginModalScreen(self.errorAlert)
+
+    def __handleErrorOK(self):
+        self.parent.endModalScreen(self.errorAlert)
+        
+            
+        
