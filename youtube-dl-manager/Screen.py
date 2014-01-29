@@ -109,8 +109,14 @@ class Screen(object):
         """Issues the screen and all its children to display."""
         self.layout()
         self.display()
+        firstResponderChild = None # We need to draw the first responder last
         for child in self.children:
-            child.update()
+            if child.isFirstResponder():
+                firstResponderChild = child
+            else:
+                child.update()
+        if firstResponderChild != None:
+            firstResponderChild.update()
         
     def display(self):
         """Don't call this function directly, call update!"""
