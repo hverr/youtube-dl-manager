@@ -217,7 +217,10 @@ class Screen(object):
         try:
             self.children.index(c)
         except ValueError:
-            raise Exception("Child not found")
+            if c == None:
+                pass
+            else:
+                raise Exception("Child not found")
 
         if self.isFirstResponder() == False:
             raise Exception("Not in the responder chain")
