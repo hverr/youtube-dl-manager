@@ -399,12 +399,16 @@ class Screen(object):
             raise Exception("Screen not at top of modal session stack.")
 
         del self.__modalScreens[-1]
-        self.makeChildFirstResponder(self.__parentResponderPreModalScreen,
-                                     False)
+        screen.resignFirstResponder()
+
+        if len(self.__modalScreens) > 0:
+            self.makeChildFirstResponder(self.__modalScreens[-1], False)
+        else:
+            self.makeChildFirstResponder(self.__parentResponderPreModalScreen,
+                                         False)
         self.removeChild(screen)
         self.update()
 
-        
 
     def activeModalSession(self):
         if len(self.__modalScreens) == 0:
