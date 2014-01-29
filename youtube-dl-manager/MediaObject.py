@@ -22,13 +22,11 @@ class MediaObject(YoutubeDL):
     # Intercept messages to the screen
     def to_stdout(self, message, skip_eol=False, check_quiet=False):
         """Intercepts the messages to the stdout"""
-        message = "STDOUT: " + message
-        super(MediaObject, self).to_stdout(message, skip_eol, check_quiet)
+        pass
 
     def to_stderr(self, message):
         """Intercecpts the message to the stderr"""
-        message = "STDERR: " + message
-        super(MediaObject, self).to_stderr(message)
+        pass
 
     def to_console_title(self, message):
         """Don't touch the console title"""
