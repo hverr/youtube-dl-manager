@@ -36,7 +36,7 @@ class Screen(object):
 
         # Used to manage model sessions
         self.__modalScreens = []
-        self.__firstResponderPreModalScreen = None
+        self.__parentResponderPreModalScreen = None
 
         self.initialize()
 
@@ -385,7 +385,8 @@ class Screen(object):
         self.addChild(screen)
 
         if self.parentResponder != None:
-            self.__parentResponderPreModalScreen = self.parentResponder
+            if self.__parentResponderPreModalScreen == None:
+                self.__parentResponderPreModalScreen = self.parentResponder
 
         self.makeChildFirstResponder(screen, False)
         self.update()
