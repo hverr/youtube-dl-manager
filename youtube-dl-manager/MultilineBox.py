@@ -47,7 +47,11 @@ class MultilineBox(Screen):
         if selected == True:
             attr = curses.A_BOLD
             if self.isFirstResponder():
+                l = len(line)
+                if l < maxWidth:
+                    line += ' '*(maxWidth - l)
                 attr = attr | curses.A_REVERSE
+
         self.addstr(y, x, line, attr)
         
     def display(self):
