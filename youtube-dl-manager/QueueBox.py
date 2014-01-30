@@ -10,6 +10,8 @@ class QueueBox(MultilineBox):
         super(QueueBox, self).initialize()
         self.downloadConfigurations = []
 
+        self.title = "Queue"
+
     def numberOfLines(self):
         return len(self.downloadConfigurations)
 
