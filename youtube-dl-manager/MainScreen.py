@@ -9,8 +9,6 @@ class MainScreen(Screen):
         self.queueBox = QueueBox(self, (1, 1))
         self.addChild(self.queueBox)
 
-        self.alert = VideoURLDialog(self)
-
         self.automaticallyCycleThroughChildren = True
     
     # Drawing
@@ -41,7 +39,8 @@ class MainScreen(Screen):
 
     def handleEvent(self, key):
         if chr(key) == 'a':
-            self.beginModalScreen(self.alert)
+            self.videoURLDialog = VideoURLDialog(self)
+            self.beginModalScreen(self.videoURLDialog)
             return True
 
         return super(MainScreen, self).handleEvent(key)
