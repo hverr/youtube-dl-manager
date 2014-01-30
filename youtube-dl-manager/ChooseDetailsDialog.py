@@ -1,3 +1,5 @@
+import string
+import unicodedata
 
 from Alert import Alert
 
@@ -54,7 +56,18 @@ class ChooseDetailsDialog(Alert):
         s = self.mediaInformation.get('title', 'Untitled')
         if type(s) != str:
             return 'Untitled'
-        return s
+        return self.__normalizeFilename(s)
+
+    def __normalizeFilename(self, fn):
+        # From http://stackoverflow.com/a/517974/262660
+        new = unicodedata.normalize('NFKD', fn)
+        new = new.encode('ASCII', 'ignore').decode('utf-8')
+
+        # Only allowed characters
+        allowed = "-_.() %s%s" % (string.ascii_letters, string.digits)
+        new = ''.join(c for c in new if c in allowed)
+        return new
+        
             
 
     # Drawing
