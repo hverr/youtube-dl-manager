@@ -1,5 +1,6 @@
 import curses
 
+from Screen import Screen
 from MultilineBox import MultilineBox
 
 from DownloadConfiguration import DownloadConfiguration
@@ -37,6 +38,13 @@ class QueueBox(MultilineBox):
             if selected and self.isFirstResponder():
                 attr = attr | curses.A_REVERSE
             self.addch(y + i, x, curses.ACS_VLINE, attr)
+
+        self.__connectBoxes()
+
+    def __connectBoxes(self):
+        y, x = self.abs(self.size[0] - 1, 0)
+        self.addch(y, x, curses.ACS_LTEE)
+        self.addch(y, x + self.size[1] - 1, curses.ACS_RTEE)
         
 
     def __maximumFilenameLength(self):
@@ -70,3 +78,101 @@ class QueueBox(MultilineBox):
             return s
         s = s[:maxWidth - 3] + "..."
         return s
+
+class DetailsScreen(Screen):
+    def __init__(self, parent, queueBox):
+        """Initializes a details screen attached to the queue box.
+
+        The details screen will attach itself to the bottom of the
+        queue box. It should be drawn after the queue box.
+
+        You can check the size attribute to see how big in height it
+        will be. The width will be calculated when the layout method
+        is called and will be the same as the width of the queue box.
+        """
+        super(DetailsScreen, self).__init__(parent, (0, 0))
+        self.queueBox = queueBox
+        self.layout()
+
+    def initialize(self):
+        self.__values = ['URL', 'Format', 'Output file']
+        self.__downloadConfiguration = None
+        self.size = (len(self.__values) + 2, 1)
+        
+        h = self.queueBoxSelectionDidChange
+        self.queueBox.selectionDidChangeHandler = h
+
+    def layout(self):
+        self.size = list(self.size)
+        self.size[1] = self.queueBox.size[1]
+        self.origin = list(self.queueBox.origin)
+        if self.queueBox.size[0] != None:
+            self.origin[0] += self.queueBox.size[0] - 1
+
+    def display(self):
+        self.clean()
+        self.box()
+        self.__connectBoxes()
+        mvnl = self.__maximumValueNameLength()
+
+        y, x = self.abs(1, 1)
+        for v in self.__values:
+            indent = mvnl - len(v)
+            v = ' '*indent + v + ":"
+            self.addstr(y, x, v)
+            y += 1
+
+        y, x = self.abs(1, mvnl + 3)
+        dc = self.currentDownloadConfiguration()
+        if dc == None:
+            for v in self.__values:
+                self.addstr(y, x, "N/A")
+                y += 1
+
+        else:
+            maxLen = self.size[1] - mvnl - 4
+            
+            # URL
+            s = dc.mediaObject.url
+            s = s[:maxLen]
+            self.addstr(y, x, s)
+
+            # Format
+            s = dc.mediaFormat
+            s = str(s)[:maxLen]
+            self.addstr(y+1, x, s)
+
+            # Output File
+            s = dc.filename
+            s = s[:maxLen]
+            self.addstr(y+2, x, s)
+            
+            
+
+    def __connectBoxes(self):
+        y, x = self.abs(0, 0)
+        self.addch(y, x, curses.ACS_LTEE)
+        self.addch(y, x + self.size[1] - 1, curses.ACS_RTEE)
+        
+
+    def __maximumValueNameLength(self):
+        s = 0
+        for v in self.__values:
+            l = len(v)
+            if l > s:
+                s = l
+        return s
+
+    def queueBoxSelectionDidChange(self, index):
+        self.update()
+
+    def currentDownloadConfiguration(self):
+        if len(self.queueBox.downloadConfigurations) == 0:
+            return None
+
+        index = self.queueBox.selectedLine
+        return self.queueBox.downloadConfigurations[index]
+
+    def acceptsFirstResponder(self):
+        return False
+        
