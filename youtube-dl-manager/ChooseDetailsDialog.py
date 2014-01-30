@@ -95,10 +95,41 @@ class ChooseDetailsDialog(Alert):
 
     # Events
     def handleOK(self):
-        pass
+        fn = self.__getFinalFilename()
+        if fn == None:
+            t = "Invalid filename."
+            msg = "Please choose a valid filename. The file must "
+            msg+= "be in the current directory and cannot contain "
+            msg+= "any illegal characters."
+            alert = MessageAlert(self, t, msg)
+            b = Button("OK", self.__handleErrorOK, Button.SHORTCUT_ENTER)
+            alert.addButton(b)
+            self.beginModalScreen(alert)
+            return
+
+    def __handleErrorOK(self):
+        self.endModalScreen(self.activeModalSession())
+        self.makeChildFirstResponder(self.filenameField)
     
     def handleCancel(self):
         self.parent.endModalScreen(self)
+
+    def __getFinalFilename(self):
+        selFormat = self.formatBox.selectedFormat()
+
+        fn = self.filenameField.getValue()
+        if '/' in fn or '\\' in fn:
+            return None
+        
+        fn = self.__normalizeFilename(fn)
+        
+        if fn in ['', '.', '..']:
+            return None
+
+        ext = selFormat.extension
+        if ext != None and len(ext) != 0:
+            fn += '.' + ext
+        return fn
 
 class FormatBox(MultilineBox):
     def initialize(self):
@@ -110,5 +141,8 @@ class FormatBox(MultilineBox):
 
     def lineAtIndex(self, index):
         return str(self.formats[index])
+
+    def selectedFormat(self):
+        return self.formats[self.selectedLine]
 
         
