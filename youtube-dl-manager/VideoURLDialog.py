@@ -79,7 +79,14 @@ class VideoURLDialog(Alert):
 
         # Choose details
         self.chooseDetailsDialog = ChooseDetailsDialog(self, mo, info)
+        self.chooseDetailsDialog.doneHandler = self.__handleChooseDetailsDone
         self.beginModalScreen(self.chooseDetailsDialog)
+
+    def __handleChooseDetailsDone(self, dc):
+        self.parent.addDownloadConfiguration(dc)
+        self.endModalScreen(self.chooseDetailsDialog)
+        self.chooseDetailsDialog = None
+        self.parent.endModalScreen(self)
 
     def __handleError(self, title, msg):
         self.errorAlert = MessageAlert(self.parent, title, msg)
