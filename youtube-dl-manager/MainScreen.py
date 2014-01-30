@@ -49,4 +49,9 @@ class MainScreen(Screen):
     def endAlert(self):
         self.endModalScreen(self.alert)
 
+    # Download Configuration management
+    def addDownloadConfiguration(self, dc):
+        """Adds a DownloadConfiguration instance to the queue"""
+        self.queueBox.downloadConfigurations.append(dc)
+
     
