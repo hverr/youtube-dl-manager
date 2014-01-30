@@ -49,7 +49,9 @@ class MultilineBox(Screen):
             if self.isFirstResponder():
                 l = len(line)
                 if l < maxWidth:
-                    line += ' '*(maxWidth - l)
+                    line += ' '*(maxWidth - l - 1)
+                    if not self.__shouldDrawScroller(self.numberOfLines()):
+                        line += ' '
                 attr = attr | curses.A_REVERSE
 
         self.addstr(y, x, line, attr)
