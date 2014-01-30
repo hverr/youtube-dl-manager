@@ -6,6 +6,7 @@ class MultilineBox(Screen):
     def initialize(self):
         self.__topLine = 0
         self.selectedLine = 0
+        self.title = None
         
     # Data management
     def numberOfLines(self):
@@ -59,6 +60,11 @@ class MultilineBox(Screen):
     def display(self):
         self.clean()
         self.box()
+
+        if self.title != None and len(self.title) > 0:
+            y, x = self.abs(0, 3)
+            a = curses.A_BOLD if self.isFirstResponder() else curses.A_NORMAL
+            self.addstr(y, x, self.title, a)
 
         numLines = self.numberOfLines()
 
