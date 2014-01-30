@@ -7,6 +7,11 @@ class MultilineBox(Screen):
         self.__topLine = 0
         self.selectedLine = 0
         self.title = None
+
+        # You can set this to a function that will be called
+        # when the selected line changed. The function must
+        # accept the new selected index as its only argument.
+        self.selectionDidChangeHandler = None
         
     # Data management
     def numberOfLines(self):
@@ -31,9 +36,16 @@ class MultilineBox(Screen):
 
         self.selectedLine = index
         self.update()
+        self.__notifySelectionChange()
 
     def getTopLine(self):
         return self.__topLine
+
+    def __notifySelectionChange(self):
+        if self.selectionDidChangeHandler == None:
+            return
+
+        self.selectionDidChangeHandler(self.selectedLine)
 
     # Displaying
     def drawLineAt(self, line, point, selected=False):
