@@ -93,7 +93,6 @@ class DetailsScreen(Screen):
         super(DetailsScreen, self).__init__(parent, (0, 0))
         
         self.queueBox = queueBox
-        self.layout()
         h = self.queueBoxSelectionDidChange
         self.queueBox.selectionDidChangeHandler = h
 
@@ -106,8 +105,7 @@ class DetailsScreen(Screen):
         self.size = list(self.size)
         self.size[1] = self.queueBox.size[1]
         self.origin = list(self.queueBox.origin)
-        if self.queueBox.size[0] != None:
-            self.origin[0] += self.queueBox.size[0] - 1
+        self.origin[0] += self.queueBox.size[0] - 1
 
     def display(self):
         self.clean()
