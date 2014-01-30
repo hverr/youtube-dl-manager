@@ -1,13 +1,15 @@
 import curses
 
+import QueueBox
 from Screen import Screen
-from QueueBox import QueueBox
 from VideoURLDialog import VideoURLDialog
 
 class MainScreen(Screen):
     def initialize(self):
-        self.queueBox = QueueBox(self, (1, 1))
+        self.queueBox = QueueBox.QueueBox(self, (1, 1))
+        self.queueBoxDetails = QueueBox.DetailsScreen(self, self.queueBox)
         self.addChild(self.queueBox)
+        self.addChild(self.queueBoxDetails)
 
         self.automaticallyCycleThroughChildren = True
     
