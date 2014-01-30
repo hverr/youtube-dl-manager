@@ -7,9 +7,7 @@ from VideoURLDialog import VideoURLDialog
 class MainScreen(Screen):
     def initialize(self):
         self.queueBox = QueueBox(self, (1, 1))
-        self.queueBox2 = QueueBox(self, (10, 1))
         self.addChild(self.queueBox)
-        self.addChild(self.queueBox2)
 
         self.alert = VideoURLDialog(self)
 
@@ -18,7 +16,6 @@ class MainScreen(Screen):
     # Drawing
     def layout(self):
         self.queueBox.size = (int(self.size[0]/3), self.size[1]-2)
-        self.queueBox2.size = (int(self.size[0]/3), self.size[1]-2)
         
     def display(self):
         self.clear()
