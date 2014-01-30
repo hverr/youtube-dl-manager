@@ -9,6 +9,7 @@ from MessageAlert import MessageAlert
 from MultilineBox import MultilineBox
 
 from MediaFormat import MediaFormat
+from DownloadConfiguration import DownloadConfiguration
 
 class ChooseDetailsDialog(Alert):
     CONTENT_HEIGHT = 12
@@ -37,6 +38,12 @@ class ChooseDetailsDialog(Alert):
 
         self.addButton(Button("OK", self.handleOK, Button.SHORTCUT_ENTER))
         self.addButton(Button("Cancel", self.handleCancel, 'c'))
+
+        # This callable is called to notify we are done and have
+        # successfully configured a DownloadConfiguration instance.
+        # The function should accept the DownloadConfiguration instance
+        # as its only argument and should end the modal session.
+        self.doneHandler = None
 
     def __extractFormats(self):
         mo = self.mediaObject
@@ -106,6 +113,11 @@ class ChooseDetailsDialog(Alert):
             alert.addButton(b)
             self.beginModalScreen(alert)
             return
+
+        mo = self.mediaObject
+        mf = self.formatBox.selectedFormat()
+        dc = DownloadConfiguration(mo, mf, fn)
+        self.doneHandler(dc)
 
     def __handleErrorOK(self):
         self.endModalScreen(self.activeModalSession())
