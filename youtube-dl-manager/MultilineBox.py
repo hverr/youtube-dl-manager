@@ -31,6 +31,9 @@ class MultilineBox(Screen):
         self.selectedLine = index
         self.update()
 
+    def getTopLine(self):
+        return self.__topLine
+
     # Displaying
     def drawLineAt(self, line, point, selected=False):
         """Can be overridden if special drawing is needed.
