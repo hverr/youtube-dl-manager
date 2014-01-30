@@ -46,9 +46,6 @@ class MainScreen(Screen):
 
         return super(MainScreen, self).handleEvent(key)
 
-    def endAlert(self):
-        self.endModalScreen(self.alert)
-
     # Download Configuration management
     def addDownloadConfiguration(self, dc):
         """Adds a DownloadConfiguration instance to the queue"""
