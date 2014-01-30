@@ -91,16 +91,16 @@ class DetailsScreen(Screen):
         is called and will be the same as the width of the queue box.
         """
         super(DetailsScreen, self).__init__(parent, (0, 0))
+        
         self.queueBox = queueBox
         self.layout()
+        h = self.queueBoxSelectionDidChange
+        self.queueBox.selectionDidChangeHandler = h
 
     def initialize(self):
         self.__values = ['URL', 'Format', 'Output file']
         self.__downloadConfiguration = None
         self.size = (len(self.__values) + 2, 1)
-        
-        h = self.queueBoxSelectionDidChange
-        self.queueBox.selectionDidChangeHandler = h
 
     def layout(self):
         self.size = list(self.size)
