@@ -38,7 +38,7 @@ class VideoURLDialog(Alert):
 
     def __drawProgressMessage(self):
         y, x = self.abs(5, 1)
-        w = (self.size[1] - 2)
+        w = (self.size[1] - 4)
         self.addstr(y, x, ' '*w)
         
         if self.__progressMessage != None:
