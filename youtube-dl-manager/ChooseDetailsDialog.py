@@ -117,7 +117,20 @@ class ChooseDetailsDialog(Alert):
         mo = self.mediaObject
         mf = self.formatBox.selectedFormat()
         dc = DownloadConfiguration(mo, mf, fn)
-        self.doneHandler(dc)
+        try:
+            self.doneHandler(dc)
+        except Exception as e:
+            self.__handleException(e)
+
+    def __handleException(self, exception):
+        t = "An error occurred."
+        m = str(exception)
+        alert = MessageAlert(self, t, m)
+
+        b = Button("OK", self.__handleErrorOK, Button.SHORTCUT_ENTER)
+        alert.addButton(b)
+                        
+        self.beginModalScreen(alert)
 
     def __handleErrorOK(self):
         self.endModalScreen(self.activeModalSession())
