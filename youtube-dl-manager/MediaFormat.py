@@ -1,4 +1,5 @@
 
+import xml.dom.minidom as MD
 
 class MediaFormat(object):
     XML_TAG = 'media-format'
@@ -84,6 +85,32 @@ class MediaFormat(object):
             tb.end('format-note')
         
         tb.end(self.XML_TAG)
+
+    @staticmethod
+    def fromXMLElement(xmlElem):
+        """Initializes an instance from a DOM element."""
+        cn = xmlElem.childNodes
+
+        mf = MediaFormat()
+
+        for c in cn:
+            if c.nodeType != MD.Node.ELEMENT_NODE:
+                continue
+
+            if c.tagName == 'id':
+                mf.id = c.firstChild.nodeValue
+            elif c.tagName == 'extension':
+                mf.extension = c.firstChild.nodeValue
+            elif c.tagName == 'resolution':
+                mf.resolution = c.firstChild.nodeValue
+            elif c.tagName == 'quality':
+                mf.quality = c.firstChild.nodeValue
+            elif c.tagName == 'filesize':
+                mf.filesize = c.firstChild.nodeValue
+            elif c.tagName == 'format-note':
+                mf.filesize = c.firstChild.nodeValue
+
+        return mf
 
     @staticmethod
     def __extractResolution(fd):

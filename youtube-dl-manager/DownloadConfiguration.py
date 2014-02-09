@@ -1,4 +1,9 @@
 
+import xml.dom.minidom as MD
+
+from MediaObject import MediaObject
+from MediaFormat import MediaFormat
+
 class DownloadConfiguration(object):
     XML_TAG = 'download-configuration'
     
@@ -29,3 +34,28 @@ class DownloadConfiguration(object):
 
         # End download configuration
         tb.end(self.XML_TAG)
+
+    @staticmethod
+    def fromXMLElement(xmlElem):
+        """Initializes an instance from a DOM element."""
+        cn = xmlElem.childNodes
+
+        mediaObject = None
+        filename = None
+        mediaFormat = None
+        
+        for c in cn:
+            if c.nodeType != MD.Node.ELEMENT_NODE:
+                continue
+            if c.tagName == 'url':
+                mediaObject = MediaObject(c.firstChild.nodeValue)
+            elif c.tagName == 'filename':
+                filename = c.firstChild.nodeValue
+            elif c.tagName == MediaFormat.XML_TAG:
+                mediaFormat = MediaFormat.fromXMLElement(c)
+
+        if None in [mediaObject, filename, mediaFormat]:
+            return None
+
+        return DownloadConfiguration(mediaObject, mediaFormat, filename)
+        
