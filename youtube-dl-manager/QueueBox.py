@@ -9,12 +9,14 @@ from MediaObject import MediaObject
 class QueueBox(MultilineBox):
     def initialize(self):
         super(QueueBox, self).initialize()
-        self.downloadConfigurations = []
+
+        # Set this after initialization of the queue box!
+        self.downloadManager = None
 
         self.title = "Queue"
 
     def numberOfLines(self):
-        return len(self.downloadConfigurations)
+        return len(self.downloadManager.queue)
 
     def lineAtIndex(self, index):
         mfl = self.__maximumFilenameLength()
@@ -34,7 +36,7 @@ class QueueBox(MultilineBox):
         for i in range(0, self.size[0] - 2):
             attr = curses.A_NORMAL
             selected = self.selectedLine - self.getTopLine() == i
-            selected = selected and len(self.downloadConfigurations) != 0
+            selected = selected and len(self.downloadManager.queue) != 0
             if selected and self.isFirstResponder():
                 attr = attr | curses.A_REVERSE
             self.addch(y + i, x, curses.ACS_VLINE, attr)
@@ -49,7 +51,7 @@ class QueueBox(MultilineBox):
 
     def __maximumFilenameLength(self):
         s = 0
-        for dc in self.downloadConfigurations:
+        for dc in self.downloadManager.queue:
             l = len(dc.filename)
             if l > s:
                 s = l
@@ -61,7 +63,7 @@ class QueueBox(MultilineBox):
         return s
 
     def __URLAtIndex(self, index, maxWidth):
-        dc = self.downloadConfigurations[index]
+        dc = self.downloadManager.queue[index]
         s = dc.mediaObject.url
         sl = len(s)
         if sl <= maxWidth:
@@ -71,7 +73,7 @@ class QueueBox(MultilineBox):
         return s
 
     def __filenameAtIndex(self, index, maxWidth):
-        dc = self.downloadConfigurations[index]
+        dc = self.downloadManager.queue[index]
         s = dc.filename
         sl = len(s)
         if sl <= maxWidth:
@@ -165,11 +167,11 @@ class DetailsScreen(Screen):
         self.update()
 
     def currentDownloadConfiguration(self):
-        if len(self.queueBox.downloadConfigurations) == 0:
+        if len(self.queueBox.downloadManager.queue) == 0:
             return None
 
         index = self.queueBox.selectedLine
-        return self.queueBox.downloadConfigurations[index]
+        return self.queueBox.downloadManager.queue[index]
 
     def acceptsFirstResponder(self):
         return False

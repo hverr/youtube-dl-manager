@@ -4,9 +4,14 @@ import QueueBox
 from Screen import Screen
 from VideoURLDialog import VideoURLDialog
 
+from DownloadManager import DownloadManager
+
 class MainScreen(Screen):
     def initialize(self):
+        self.downloadManager = DownloadManager()
+        
         self.queueBox = QueueBox.QueueBox(self, (1, 1))
+        self.queueBox.downloadManager = self.downloadManager
         self.queueBoxDetails = QueueBox.DetailsScreen(self, self.queueBox)
         self.addChild(self.queueBox)
         self.addChild(self.queueBoxDetails)
@@ -50,6 +55,6 @@ class MainScreen(Screen):
     # Download Configuration management
     def addDownloadConfiguration(self, dc):
         """Adds a DownloadConfiguration instance to the queue"""
-        self.queueBox.downloadConfigurations.append(dc)
+        self.downloadManager.addToQueue(dc)
 
     
