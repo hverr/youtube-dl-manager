@@ -1,6 +1,8 @@
 
 
 class MediaFormat(object):
+    XML_TAG = 'media-format'
+    
     QUALITY_NONE = None
     QUALITY_BEST = 'best'
     QUALITY_WORST = 'worst'
@@ -44,6 +46,44 @@ class MediaFormat(object):
 
     def __repr__(self):
         return str(self)
+
+    def addToTreeBuilder(self, tb):
+        """Adds itself to a xml.etree.TreeBuilder instance.
+
+        The element name is media-format.
+        """
+        tb.start(self.XML_TAG)
+
+        tb.start('id')
+        tb.data(str(self.id))
+        tb.end('id')
+
+        if self.extension != None:
+            tb.start('extension')
+            tb.data(self.extension)
+            tb.end('extension')
+
+        if self.resolution != None:
+            tb.start('resolution')
+            tb.data(str(self.resolution))
+            tb.end('resolution')
+
+        if self.quality != None:
+            tb.start('quality')
+            tb.data(str(self.quality))
+            tb.end('quality')
+
+        if self.filesize != None:
+            tb.start('filesize')
+            tb.data(str(self.filesize))
+            tb.end('filesize')
+
+        if self.formatNote != None:
+            tb.start('format-note')
+            tb.data(self.formatNote)
+            tb.end('format-note')
+        
+        tb.end(self.XML_TAG)
 
     @staticmethod
     def __extractResolution(fd):
