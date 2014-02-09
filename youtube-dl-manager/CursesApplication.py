@@ -1,3 +1,4 @@
+import sys
 import curses
 import time
 
@@ -15,8 +16,13 @@ class CursesApplication(object):
 
     def __cursesWrapper(self, stdscr):
         curses.curs_set(0) # No cursor
+
+        if len(sys.argv) >= 2:
+            fn = sys.argv[1]
+        else:
+            fn = None
         
-        self.mainScreen = MainScreen(None, (0,0))
+        self.mainScreen = MainScreen(fn, None, (0,0))
         self.mainScreen.stdscr = stdscr
 
         # Make sure the terminal has enough space

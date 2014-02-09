@@ -7,9 +7,20 @@ from VideoURLDialog import VideoURLDialog
 from DownloadManager import DownloadManager
 
 class MainScreen(Screen):
-    def initialize(self):
-        self.downloadManager = DownloadManager()
+    def __init__(self, filename=None, *args, **kwargs):
+        """Initializes the main screen.
+
+        filename - The filename to store the download manager status.
+                   None implies the default filename.
+        """
+        if filename != None:
+            self.downloadManager = DownloadManager(filename)
+        else:
+            self.downloadManager = DownloadManager()
+            
+        super(MainScreen, self).__init__(*args, **kwargs)
         
+    def initialize(self):
         self.queueBox = QueueBox.QueueBox(self, (1, 1))
         self.queueBox.downloadManager = self.downloadManager
         self.queueBoxDetails = QueueBox.DetailsScreen(self, self.queueBox)
@@ -34,6 +45,16 @@ class MainScreen(Screen):
         title = "Youtube DL Manager"
         y, x = self.abs(0,3)
         self.addstr(y, x, title, curses.A_BOLD)
+
+        maxWidth = self.size[1] - 6 - len(title) - 8
+        s = self.downloadManager.filename 
+        sl = len(s)
+        if sl > maxWidth:
+            s = s[sl-maxWidth+3:]
+            s = "..." + s
+            sl = maxWidth
+        y, x = self.abs(0, self.size[1] - 3 - sl)
+        self.addstr(y, x, s)
 
     # Events
     def acceptsFirstResponder(self):
