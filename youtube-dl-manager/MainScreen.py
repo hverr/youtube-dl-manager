@@ -2,6 +2,8 @@ import curses
 
 import QueueBox
 from Screen import Screen
+from Button import Button
+from MessageAlert import MessageAlert
 from VideoURLDialog import VideoURLDialog
 
 from DownloadManager import DownloadManager
@@ -28,6 +30,16 @@ class MainScreen(Screen):
         self.addChild(self.queueBoxDetails)
 
         self.automaticallyCycleThroughChildren = True
+
+        self.__pendingAlert = None
+        try:
+            self.downloadManager.load()
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            self.__handleException(e)
+
+            
     
     # Drawing
     def layout(self):
@@ -37,6 +49,11 @@ class MainScreen(Screen):
         self.clear()
         self.size = self.stdscr.getmaxyx()
         self.__drawBox()
+
+        if self.__pendingAlert != None:
+            alert = self.__pendingAlert
+            self.__pendingAlert = None
+            self.beginModalScreen(alert)
 
 
     def __drawBox(self):
@@ -72,6 +89,23 @@ class MainScreen(Screen):
             return True
 
         return super(MainScreen, self).handleEvent(key)
+
+    def __handleException(self, exception):
+        t = "An error occurred."
+        m = str(exception)
+        alert = MessageAlert(self, t, m)
+
+        b = Button("OK", self.__handleErrorOK, Button.SHORTCUT_ENTER)
+        alert.addButton(b)
+
+        if not self.isFirstResponder():
+            self.__pendingAlert = alert
+            return
+                        
+        self.beginModalScreen(alert)
+
+    def __handleErrorOK(self):
+        self.endModalScreen(self.activeModalSession())
 
     # Download Configuration management
     def addDownloadConfiguration(self, dc):
