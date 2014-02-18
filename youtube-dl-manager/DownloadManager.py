@@ -16,12 +16,12 @@ class DownloadManager(object):
 
         self.filename = filename
 
-        self.lock = RLock()
+        self.__lock = RLock()
 
     # Saving and loading
     def synchronize(self):
         """Writes and saves the download status."""
-        with self.lock:
+        with self.__lock:
             tb = ET.TreeBuilder()
             tb.start(self.XML_TAG)
 
@@ -40,7 +40,7 @@ class DownloadManager(object):
             
     def load(self):
         """Loads the download status from the file."""
-        with self.lock:
+        with self.__lock:
             doc = MD.parse(self.filename)
             root = doc.documentElement
             if root.tagName != self.XML_TAG:
@@ -67,7 +67,7 @@ class DownloadManager(object):
     # Managing queue
     def addToQueue(self, dc):
         """Adds a download configuration to the queue."""
-        with self.lock:
+        with self.__lock:
             self.queue.append(dc)
             self.synchronize()
 
