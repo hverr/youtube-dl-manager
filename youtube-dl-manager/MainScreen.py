@@ -1,6 +1,7 @@
 import curses
 
 import QueueBox
+from StatusBox import StatusBox
 from Screen import Screen
 from Button import Button
 from MessageAlert import MessageAlert
@@ -29,6 +30,9 @@ class MainScreen(Screen):
         self.addChild(self.queueBox)
         self.addChild(self.queueBoxDetails)
 
+        self.statusBox = StatusBox(self, (1, 1))
+        self.addChild(self.statusBox)
+
         self.automaticallyCycleThroughChildren = True
 
         self.__pendingAlert = None
@@ -43,7 +47,15 @@ class MainScreen(Screen):
     
     # Drawing
     def layout(self):
-        self.queueBox.size = (int(self.size[0]/3), self.size[1]-2)
+        h, w = (i - 2 for i in self.size)
+        self.queueBox.size = (int(h/3), w)
+
+        y = self.queueBox.size[0] + self.queueBoxDetails.size[0]
+        x = 1
+        self.statusBox.origin = (y, x)
+        self.statusBox.size = (8, w)
+
+        
         
     def display(self):
         self.clear()
