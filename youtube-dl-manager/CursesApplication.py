@@ -16,6 +16,8 @@ class CursesApplication(object):
 
     def __cursesWrapper(self, stdscr):
         curses.curs_set(0) # No cursor
+        stdscr.nodelay(1) # getch returns immediately
+        stdscr.notimeout(1) # escape sequences come immediately
 
         if len(sys.argv) >= 2:
             fn = sys.argv[1]
@@ -33,6 +35,9 @@ class CursesApplication(object):
         while True:
             # List of responders
             c = stdscr.getch()
+            if c == -1:
+                continue
+            
             if c == curses.KEY_RESIZE:
                 self.__handleTerminalResize()
                 continue
