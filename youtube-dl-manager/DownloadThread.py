@@ -18,6 +18,7 @@ class DownloadThread(Thread):
             argument. This will be None in case of success, or an
             Exception when one occurs.
         """
+        super(DownloadThread, self).__init__()
         self.downloadConfiguration = downloadConfiguration
 
     def run(self):
