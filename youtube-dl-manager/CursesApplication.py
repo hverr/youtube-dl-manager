@@ -4,6 +4,7 @@ import time
 
 from MainScreen import MainScreen
 
+from Notification import Notification
 
 class CursesApplication(object):
     MIN_SIZE = (80,24)
@@ -66,6 +67,9 @@ class CursesApplication(object):
                 
             # Next key
             time2 = time.time()
+
+            # Notifications
+            Notification.handleNotifications()
 
             size = stdscr.getmaxyx()
             s = 'Handling key %d took %0.3f ms' % (c, ((time2-time1)*1000.0))
