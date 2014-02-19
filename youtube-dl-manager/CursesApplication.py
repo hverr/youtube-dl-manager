@@ -34,6 +34,9 @@ class CursesApplication(object):
 
         # Main runloop
         while True:
+            # Notifications
+            Notification.handleNotifications()
+
             # List of responders
             c = stdscr.getch()
             if c == -1:
@@ -67,9 +70,6 @@ class CursesApplication(object):
                 
             # Next key
             time2 = time.time()
-
-            # Notifications
-            Notification.handleNotifications()
 
             size = stdscr.getmaxyx()
             s = 'Handling key %d took %0.3f ms' % (c, ((time2-time1)*1000.0))
