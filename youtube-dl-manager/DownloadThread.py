@@ -1,4 +1,4 @@
-
+import curses
 import time
 from threading import Thread
 
@@ -23,6 +23,7 @@ class DownloadThread(Thread):
 
     def run(self):
         time.sleep(3)
+        curses.beep()
         self.__notifyDone(None)
         pass
 
