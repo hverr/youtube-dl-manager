@@ -1,18 +1,35 @@
+import curses
 
-from threading import RLock
+from threading import RLock, Thread
 
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as MD
 
+from Notification import Notification
+
 from DownloadConfiguration import DownloadConfiguration
+from DownloadThread import DownloadThread
 
 class DownloadManager(object):
     XML_TAG = 'download-manager'
     DEFAULT_FILENAME = "download-manager.xml"
+
+    # Posted when the download manager stops downloading because
+    # the queue is empty.
+    DONE_NOTIFICATION = "DownloadManagerDoneNotification"
+
+    # Posted when the download manager stopped after a call to the
+    # stop method. Note that this notification is NOT posted when
+    # the manager stops due to an empty queue.
+    STOPPED_NOTIFICATION = "DownloadManagerStoppedNotification"
+    
     def __init__(self, filename=DEFAULT_FILENAME):
         self.queue = [] # Collection of DownloadConfiguration instances
         self.done = [] # Cellection of ... instances
         self.active = None # DownloadConfiguration instance or None
+
+        self.__downloadThread = None
+        self.__shouldStop = False
 
         self.filename = filename
 
@@ -70,6 +87,72 @@ class DownloadManager(object):
         with self.__lock:
             self.queue.append(dc)
             self.synchronize()
+
+    # Downloading Objects
+    def isDownloading(self):
+        with self.__lock:
+            return self.active != None
+
+    def startDownloading(self):
+        with self.__lock:
+            self.__shouldStop = False
+            if self.active != None:
+                return
+
+            self.__downloadNextItem()
+
+    def stopDownloading(self):
+        with self.__lock:
+            self.__shouldStop = True
+
+    def __downloadNextItem(self):
+        with self.__lock:
+            if self.__shouldStop == True:
+                self.__shouldStop = False
+                self.active = None
+
+                notifName = DownloadThread.DONE_NOTIFICATION
+                Notification.removeObserver(self, notifName)
+                self.__notifyStopped()
+                return
+
+            if len(self.queue) == 0:
+                self.active = None
+
+                notifName = DownloadThread.DONE_NOTIFICATION
+                Notification.removeObserver(self, notifName)
+                self.__notifyDone()
+                return
+
+            # Start the download-thread
+            notifName = DownloadThread.DONE_NOTIFICATION
+            Notification.addObserver(self, notifName)
+
+            self.active = self.queue[-1]
+            del self.queue[-1]
+            self.__downloadThread = DownloadThread(self.active)
+            self.__downloadThread.start()
+
+    def __handleDownloadThreadDoneNotification(self, notif):
+        if notif.sender != self.__downloadThread:
+            return
+
+        self.__downloadThread = None
+        self.__downloadNextItem()
+
+    # Notification
+    def __notifyDone(self):
+        n = Notification(self.DONE_NOTIFICATION, self)
+        Notification.post(n)
+
+    def __notifyStopped(self):
+        n = Notification(self.STOPPED_NOTIFICATION, self)
+        Notification.post(n)
+        
+    def handleNotification(self, notif):
+        if notif.name == DownloadThread.DONE_NOTIFICATION:
+            self.__handleDownloadThreadDoneNotification(notif)
+        
 
 
 # Exceptions
