@@ -42,6 +42,12 @@ class Notification(object):
     # Manager observers
     @staticmethod
     def addObserver(observer, notificationName):
+        """Adds an observer for the given notification.
+
+        The observer must be an object that has the handleNotification
+        callable as a property. This method must accept one argument,
+        namely the notification.
+        """
         with Notification.__lock:
             if (observer, notificationName) in Notification.__observers:
                 return
@@ -65,12 +71,16 @@ class Notification(object):
                 
             
     @staticmethod
-    def nextNotification():
-        """Should only be called by the main runloop manager."""
+    def handleNotifications():
+        """Should be called from the main runloop!!!!"""
         with Notification.__lock:
-            if len(Notification.__queue) == 0:
-                return None
-            n = Notification.__queue[0]
-            del Notification.__queue[0]
-            return n
+            for n in Notification.__queue:
+                Notification.__handleNotification(n)
+            Notification.__queue.clear()
+
+    @staticmethod
+    def __handleNotification(n):
+        for observer, name in Notification.__observers:
+            if name == n.name:
+                observer.handleNotification(n)
         
