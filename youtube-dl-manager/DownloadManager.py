@@ -1,5 +1,3 @@
-import curses
-
 from threading import RLock, Thread
 
 import xml.etree.ElementTree as ET
