@@ -90,7 +90,7 @@ class MainScreen(Screen):
         return True
 
     def respondsTo(self, key):
-        if chr(key) == 'a':
+        if chr(key) in ['a', 's']:
             return True
         return super(MainScreen, self).respondsTo(key)
 
@@ -99,8 +99,14 @@ class MainScreen(Screen):
             self.videoURLDialog = VideoURLDialog(self)
             self.beginModalScreen(self.videoURLDialog)
             return True
+        
+        elif chr(key) == 's':
+            self.__startDownloading()
 
         return super(MainScreen, self).handleEvent(key)
+
+    def __startDownloading(self):
+        self.downloadManager.startDownloading()
 
     def __handleException(self, exception):
         t = "An error occurred."
