@@ -8,6 +8,7 @@ class StatusBox(Screen):
     
     def initialize(self):
         self.status = self.STATUS_IDLE
+        self.currentObject = None # Set this to a string
 
     # Drawing
     def display(self):
@@ -24,7 +25,10 @@ class StatusBox(Screen):
         if self.status == self.STATUS_IDLE:
             self.addstr(y, x, "idle")
         elif self.status == self.STATUS_DOWNLOADING:
-            self.addstr(y, x, "downloading")
+            d = "downloading"
+            self.addstr(y, x, d)
+            if self.currentObject != None:
+                self.addstr(y, x + len(d), " '" + self.currentObject + "'")
         else:
             raise Exception("Invalid status")
 
