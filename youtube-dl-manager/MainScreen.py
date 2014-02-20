@@ -109,12 +109,15 @@ class MainScreen(Screen):
             return True
         
         elif chr(key) == 's':
-            self.__startDownloading()
+            self.__toggleDownloading()
 
         return super(MainScreen, self).handleEvent(key)
 
-    def __startDownloading(self):
-        self.downloadManager.startDownloading()
+    def __toggleDownloading(self):
+        if self.downloadManager.active == None:
+            self.downloadManager.startDownloading()
+        else:
+            self.downloadManager.stopDownloading()
 
     def __handleException(self, exception):
         t = "An error occurred."
@@ -145,10 +148,14 @@ class MainScreen(Screen):
             self.__handleDownloadManagerNextDownloadNotification()
 
     def __handleDownloadManagerStoppedNotification(self):
-        pass
+        self.statusBox.status = StatusBox.STATUS_IDLE
+
+        self.update()
 
     def __handleDownloadManagerDoneNotification(self):
-        pass
+        self.statusBox.status = StatusBox.STATUS_IDLE
+
+        self.update()
 
     def __handleDownloadManagerNextDownloadNotification(self):
         self.statusBox.status = StatusBox.STATUS_DOWNLOADING
