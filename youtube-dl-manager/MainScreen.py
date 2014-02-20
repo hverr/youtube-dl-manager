@@ -1,5 +1,7 @@
 import curses
 
+from Notification import Notification
+
 import QueueBox
 from StatusBox import StatusBox
 from Screen import Screen
@@ -42,6 +44,12 @@ class MainScreen(Screen):
             pass
         except Exception as e:
             self.__handleException(e)
+
+        ns = [DownloadManager.NEXT_DOWNLOAD_NOTIFICATION,
+             DownloadManager.DONE_NOTIFICATION,
+             DownloadManager.STOPPED_NOTIFICATION]
+        for n in ns:
+            Notification.addObserver(self, n)
 
             
     
@@ -124,6 +132,32 @@ class MainScreen(Screen):
 
     def __handleErrorOK(self):
         self.endModalScreen(self.activeModalSession())
+
+    # Notifications
+    def handleNotification(self, n):
+        if n.name == DownloadManager.STOPPED_NOTIFICATION:
+            self.__handleDownloadManagerStoppedNotification()
+
+        elif n.name == DownloadManager.DONE_NOTIFICATION:
+            self.__handleDownloadManagerDoneNotification()
+
+        elif n.name == DownloadManager.NEXT_DOWNLOAD_NOTIFICATION:
+            self.__handleDownloadManagerNextDownloadNotification()
+
+    def __handleDownloadManagerStoppedNotification(self):
+        pass
+
+    def __handleDownloadManagerDoneNotification(self):
+        pass
+
+    def __handleDownloadManagerNextDownloadNotification(self):
+        self.statusBox.status = StatusBox.STATUS_DOWNLOADING
+
+        fn = self.downloadManager.active.filename
+        self.statusBox.currentObject = fn
+
+        self.update()
+        
 
     # Download Configuration management
     def addDownloadConfiguration(self, dc):
