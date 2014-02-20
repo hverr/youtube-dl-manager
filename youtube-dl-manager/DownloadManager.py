@@ -20,6 +20,9 @@ class DownloadManager(object):
     # stop method. Note that this notification is NOT posted when
     # the manager stops due to an empty queue.
     STOPPED_NOTIFICATION = "DownloadManagerStoppedNotification"
+
+    # Posted when the downloading of a new object has commenced.
+    NEXT_DOWNLOAD_NOTIFICATION = "DownloadManagerNextDownloadNotification"
     
     def __init__(self, filename=DEFAULT_FILENAME):
         self.queue = [] # Collection of DownloadConfiguration instances
@@ -131,6 +134,8 @@ class DownloadManager(object):
             self.__downloadThread = DownloadThread(self.active)
             self.__downloadThread.start()
 
+            self.__notifyNextDownload()
+
     def __handleDownloadThreadDoneNotification(self, notif):
         if notif.sender != self.__downloadThread:
             return
@@ -145,6 +150,10 @@ class DownloadManager(object):
 
     def __notifyStopped(self):
         n = Notification(self.STOPPED_NOTIFICATION, self)
+        Notification.post(n)
+
+    def __notifyNextDownload(self):
+        n = Notification(self.NEXT_DOWNLOAD_NOTIFICATION, self)
         Notification.post(n)
         
     def handleNotification(self, notif):
