@@ -83,6 +83,8 @@ class MultilineBox(Screen):
 
         numLines = self.numberOfLines()
 
+        self.__checkSelectedLine(numLines)
+
         endLine = self.__topLine + self.size[0] - 2 # not included
         endLine = min(endLine, numLines)
             
@@ -94,6 +96,16 @@ class MultilineBox(Screen):
 
         if self.__shouldDrawScroller(numLines):
             self.__drawScroller(numLines)
+
+    def __checkSelectedLine(self, numLines):
+        if numLines <= 1:
+            self.selectedLine = 0
+        elif self.selectedLine >= numLines:
+            self.selectedLine = numLines - 1
+        else:
+            return
+
+        self.__notifySelectionChange()
 
     def __shouldDrawScroller(self, numLines):
         return (self.__canScrollDown(numLines) or self.__canScrollUp())
