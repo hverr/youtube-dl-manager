@@ -53,7 +53,10 @@ class MultilineBox(Screen):
 
         point - (y, x) relative coordinates
         """
+        nol = self.numberOfLines()
         maxWidth = self.size[1] - 2
+        if self.__shouldDrawScroller(nol):
+            maxWidth -= 1
         line = line[:maxWidth]
         y, x = self.abs(point[0], point[1])
         attr = curses.A_NORMAL
@@ -63,7 +66,7 @@ class MultilineBox(Screen):
                 l = len(line)
                 if l < maxWidth:
                     line += ' '*(maxWidth - l - 1)
-                    if not self.__shouldDrawScroller(self.numberOfLines()):
+                    if not self.__shouldDrawScroller(nol):
                         line += ' '
                 attr = attr | curses.A_REVERSE
 
