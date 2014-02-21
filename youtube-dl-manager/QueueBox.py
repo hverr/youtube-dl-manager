@@ -171,6 +171,8 @@ class DetailsScreen(Screen):
             return None
 
         index = self.queueBox.selectedLine
+        if index >= len(self.queueBox.downloadManager.queue):
+            return None
         return self.queueBox.downloadManager.queue[index]
 
     def acceptsFirstResponder(self):
