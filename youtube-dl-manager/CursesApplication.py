@@ -3,7 +3,6 @@ import curses
 import time
 
 from InitializationScreen import InitializationScreen
-from MainScreen import MainScreen
 
 from Notification import Notification
 
@@ -102,6 +101,8 @@ class CursesApplication(object):
             self.mainScreen.update()
 
     def __initializationFinished(self):
+        from MainScreen import MainScreen
+
         if len(sys.argv) >= 2:
             fn = sys.argv[1]
         else:
