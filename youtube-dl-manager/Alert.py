@@ -125,7 +125,24 @@ class Alert(Screen):
         # No button found
         return super(Alert, self).handleEvent(key)
 
-    
+
+    # Responders
+    def makeFirstResponder(self, shouldUpdate=True):
+        super(Alert, self).makeFirstResponder(False)
+        buttonIsFirstResponder = False
+        for c in self.children:
+            if c.isFirstResponder():
+                try:
+                    self.buttons.index(c)
+                    buttonIsFirstResponder = True
+                    break
+                except ValueError:
+                    pass
+
+        if buttonIsFirstResponder:
+            self.makeChildFirstResponder(None, True)
+        else:
+            super(Alert, self).makeFirstResponder(True)
 
             
             
