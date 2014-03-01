@@ -165,7 +165,7 @@ class InitializationScreen(Screen):
         title = "Could not check for newer Youtube DL versions."
         msg = str(e)
         a = MessageAlert(self, title, msg)
-        b = Button("Continue", self.__endAlert, Button.SHORTCUT_ENTER)
+        b = Button("Continue", self.__continueApp, Button.SHORTCUT_ENTER)
         a.addButton(b)
         b = Button("Abort", self.__abort, 'a')
         a.addButton(b)
