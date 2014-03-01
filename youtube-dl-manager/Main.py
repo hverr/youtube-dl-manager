@@ -1,6 +1,3 @@
-from Preferences import Preferences
-from SourceCodeManager import SourceCodeManager
-
 from CursesApplication import CursesApplication
 
 def main():
