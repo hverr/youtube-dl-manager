@@ -67,6 +67,9 @@ class InitializationScreen(Screen):
 
         # Check updates
         try:
+            if self.preferences.autoupdates == True:
+                self.initMessage = "Checking for updates..."
+                self.update()
             shouldUpdate = scm.checkForYoutubeDLUpdates()
         except urllib.request.URLError as e:
             self.__updateURLError(e)
