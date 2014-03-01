@@ -7,7 +7,7 @@ from MainScreen import MainScreen
 
 from Notification import Notification
 
-from Preferences import Preferences
+import Preferences
 
 class CursesApplication(object):
     MIN_SIZE = (80,24)
@@ -16,6 +16,14 @@ class CursesApplication(object):
         pass
 
     def run(self):
+        self.preferences = Preferences.Preferences()
+        try:
+            self.preferences.readPreferences()
+        except Preferences.PreferencesException as e:
+            print("An error occurred while parsing the preferences:",
+                  e, file=sys.stderr)
+            return
+            
         curses.wrapper(self.__cursesWrapper)
 
     def __cursesWrapper(self, stdscr):
@@ -24,7 +32,7 @@ class CursesApplication(object):
         stdscr.notimeout(1) # escape sequences come immediately
 
         # Begin with the initialization screen
-        prefs = Preferences()
+        prefs = self.preferences
         doneHandler = self.__initializationFinished
         self.mainScreen = InitializationScreen(prefs, doneHandler, None, (0, 0))
         self.mainScreen.stdscr = stdscr
