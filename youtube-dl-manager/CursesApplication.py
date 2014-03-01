@@ -2,9 +2,12 @@ import sys
 import curses
 import time
 
+from InitializationScreen import InitializationScreen
 from MainScreen import MainScreen
 
 from Notification import Notification
+
+from Preferences import Preferences
 
 class CursesApplication(object):
     MIN_SIZE = (80,24)
@@ -20,12 +23,10 @@ class CursesApplication(object):
         stdscr.nodelay(1) # getch returns immediately
         stdscr.notimeout(1) # escape sequences come immediately
 
-        if len(sys.argv) >= 2:
-            fn = sys.argv[1]
-        else:
-            fn = None
-        
-        self.mainScreen = MainScreen(fn, None, (0,0))
+        # Begin with the initialization screen
+        prefs = Preferences()
+        doneHandler = self.__initializationFinished
+        self.mainScreen = InitializationScreen(prefs, doneHandler, None, (0, 0))
         self.mainScreen.stdscr = stdscr
 
         # Make sure the terminal has enough space
@@ -91,6 +92,17 @@ class CursesApplication(object):
         if shouldRedraw:
             self.mainScreen.clear()
             self.mainScreen.update()
+
+    def __initializationFinished(self):
+        if len(sys.argv) >= 2:
+            fn = sys.argv[1]
+        else:
+            fn = None
+
+        stdscr = self.mainScreen.stdscr
+        self.mainScreen = MainScreen(fn, None, (0,0))
+        self.mainScreen.stdscr = stdscr
+        self.__handleTerminalResize()
 
                 
                     
