@@ -28,7 +28,7 @@ class Alert(Screen):
         if len(self.buttons) == 0:
             self.children.append(b)
         else:
-            insertIndex = self.children.index(self.buttons[0])
+            insertIndex = self.children.index(self.buttons[-1])
             self.children.insert(insertIndex, b)
             
         self.buttons.append(b)
