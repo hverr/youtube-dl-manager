@@ -192,7 +192,7 @@ class InitializationScreen(Screen):
         msg+= "file."
 
         a = MessageAlert(self, title, msg)
-        b = Button("Abort", self.__abort, 'a')
+        b = Button("Abort", self.__abort, Button.SHORTCUT_ENTER)
         a.addButton(b)
 
         self.beginModalScreen(a)
@@ -203,7 +203,7 @@ class InitializationScreen(Screen):
         msg+= str(e)
 
         a = MessageAlert(self, title, msg)
-        b = Button("Abort", self.__abort, 'a')
+        b = Button("Abort", self.__abort, Button.SHORTCUT_ENTER)
         a.addButton(b)
 
         self.beginModalScreen(a)
