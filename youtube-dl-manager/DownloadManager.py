@@ -23,11 +23,18 @@ class DownloadManager(object):
 
     # Posted when the downloading of a new object has commenced.
     NEXT_DOWNLOAD_NOTIFICATION = "DownloadManagerNextDownloadNotification"
+
+    # Posted when new output in self.output is available.
+    NEW_OUTPUT_NOTIFICATION = "DownloadManagerNewOutputNotification"
     
     def __init__(self, filename=DEFAULT_FILENAME):
         self.queue = [] # Collection of DownloadConfiguration instances
         self.done = [] # Cellection of ... instances
         self.active = None # DownloadConfiguration instance or None
+
+        # List of tuples (text, type) where text is a string and type
+        # is 0 for stdout and 1 for stderr.
+        self.output = []
 
         self.__downloadThread = None
         self.__shouldStop = False
@@ -129,6 +136,9 @@ class DownloadManager(object):
             notifName = DownloadThread.DONE_NOTIFICATION
             Notification.addObserver(self, notifName)
 
+            notifName = DownloadThread.NEW_OUTPUT_NOTIFICATION
+            Notification.addObserver(self, notifName)
+
             self.active = self.queue[-1]
             del self.queue[-1]
             self.__downloadThread = DownloadThread(self.active)
@@ -143,6 +153,13 @@ class DownloadManager(object):
         self.__downloadThread = None
         self.__downloadNextItem()
 
+    def __handleDownloadThreadNewOutputNotification(self, notif):
+        if notif.sender != self.__downloadThread:
+            return
+
+        self.output = notif.sender.output
+        self.__notifyNewOutput()
+
     # Notification
     def __notifyDone(self):
         n = Notification(self.DONE_NOTIFICATION, self)
@@ -155,10 +172,17 @@ class DownloadManager(object):
     def __notifyNextDownload(self):
         n = Notification(self.NEXT_DOWNLOAD_NOTIFICATION, self)
         Notification.post(n)
+
+    def __notifyNewOutput(self):
+        n = Notification(self.NEW_OUTPUT_NOTIFICATION, self)
+        Notification.post(n)
         
     def handleNotification(self, notif):
         if notif.name == DownloadThread.DONE_NOTIFICATION:
             self.__handleDownloadThreadDoneNotification(notif)
+
+        if notif.name == DownloadThread.NEW_OUTPUT_NOTIFICATION:
+            self.__handleDownloadThreadNewOutputNotification(notif)
         
 
 
