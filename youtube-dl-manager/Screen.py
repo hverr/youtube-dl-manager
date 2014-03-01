@@ -253,7 +253,8 @@ class Screen(object):
     def __makeNextChildFirstResponder(self):
         curFirst, nextFirst = self.__getNextChildForFirstResponder()
 
-        curFirst.resignFirstResponder()
+        if curFirst != None:
+            curFirst.resignFirstResponder()
         nextFirst.makeFirstResponder()
         self.parentResponder = nextFirst
 
@@ -290,7 +291,9 @@ class Screen(object):
 
     def __makePreviousChildFirstResponder(self):
         curFirst, prevFirst = self.__getPreviousChildForFirstResponder()
-        curFirst.resignFirstResponder()
+
+        if curFirst != None:
+            curFirst.resignFirstResponder()
         prevFirst.makeFirstResponder()
         self.parentResponder = prevFirst
 
