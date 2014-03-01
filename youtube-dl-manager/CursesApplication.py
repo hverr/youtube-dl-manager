@@ -111,6 +111,7 @@ class CursesApplication(object):
         self.mainScreen = MainScreen(fn, None, (0,0))
         self.mainScreen.stdscr = stdscr
         self.__handleTerminalResize()
+        self.mainScreen.makeFirstResponder()
 
                 
                     
