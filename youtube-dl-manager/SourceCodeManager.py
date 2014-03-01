@@ -126,6 +126,10 @@ class SourceCodeManager(object):
             os.remove(tmp)
 
         # delete the previous code and move the new code
+        try:
+            os.makedirs(self.youtubeDLSourceFolder(), 0o755)
+        except:
+            pass
         oldCode = self.youtubeDLSourceFolder()
         try:
             shutil.rmtree(oldCode)
