@@ -12,6 +12,7 @@ def drawLegend(self, y):
     legend = ['[a] Add URL', '[x] Remove URL']
 
     x = self.size[1] - 3
+    x = self.abs(0, x)[1]
     for l in legend:
         l = " " + l + " "
         x -= len(l)
