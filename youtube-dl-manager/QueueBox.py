@@ -106,7 +106,7 @@ class QueueBox(MultilineBox):
         drawLegend(self, y)
 
     def respondsTo(self, key):
-        if chr(key) in ['a']:
+        if chr(key) in ['a', 'x']:
             return True
         return super(QueueBox, self).respondsTo(key)
 
@@ -114,6 +114,11 @@ class QueueBox(MultilineBox):
         if chr(key) == 'a':
             self.videoURLDialog = VideoURLDialog(self)
             self.beginModalScreen(self.videoURLDialog)
+            return True
+
+        elif chr(key) == 'x':
+            si = self.selectedLine
+            self.downloadManager.removeFromQueue(si, self)
             return True
 
         return super(QueueBox, self).handleEvent(key)

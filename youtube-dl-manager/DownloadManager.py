@@ -3,6 +3,9 @@ from threading import RLock, Thread
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as MD
 
+from Button import Button
+from MessageAlert import MessageAlert
+
 from Notification import Notification
 
 from DownloadConfiguration import DownloadConfiguration
@@ -95,6 +98,62 @@ class DownloadManager(object):
         with self.__lock:
             self.queue.append(dc)
             self.synchronize()
+
+    def removeFromQueue(self, index, alertParent=None):
+        """Removes a download configuration from the queue.
+
+        index - The index of the download configuration
+        alertParent - The parent of the confirmation alert if you
+           want to show one to the user. If you want to remove the
+           download configuration without confiromation, pass None.
+        """
+        with self.__lock:
+            if index >= len(self.queue):
+                return
+
+            if alertParent != None:
+                self.__showRemovalConfirmation(index, alertParent)
+            else:
+                dc = self.queue[index]
+                self.__removalConfiguration = dc
+                self.__continueRemoval()
+
+    def __showRemovalConfirmation(self, index, alertParent):
+        with self.__lock:
+            if index >= len(self.queue):
+                return
+
+            dc = self.queue[index]
+            self.__removalConfiguration = dc
+
+            title = "Are you sure you want to delete the selected "
+            title+= "download configuration?"
+            msg = "This operation cannot be undone."
+
+            a = MessageAlert(alertParent, title, msg)
+            b = Button("OK", self.__continueRemoval, Button.SHORTCUT_ENTER)
+            a.addButton(b)
+            b = Button("Cancel", self.__endRemovalConfirmation, 'c')
+            a.addButton(b)
+            
+            self.__removalAlert = a
+            alertParent.beginModalScreen(a)
+
+    def __endRemovalConfirmation(self):
+        self.__removalAlert.parent.endModalScreen(self.__removalAlert)
+        self.__removalAlert = None
+
+    def __continueRemoval(self):
+        with self.__lock:
+            try:
+                self.queue.remove(self.__removalConfiguration)
+                self.synchronize()
+            except ValueError:
+                pass
+            
+        self.__removalAlert.parent.endModalScreen(self.__removalAlert)
+        self.__removalAlert = None
+
 
     # Downloading Objects
     def isDownloading(self):
