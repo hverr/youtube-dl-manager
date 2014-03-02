@@ -69,6 +69,7 @@ class MainScreen(Screen):
         self.clear()
         self.size = self.stdscr.getmaxyx()
         self.__drawBox()
+        self.__drawLegend()
 
         if self.__pendingAlert != None:
             alert = self.__pendingAlert
@@ -92,6 +93,20 @@ class MainScreen(Screen):
             sl = maxWidth
         y, x = self.abs(0, self.size[1] - 3 - sl)
         self.addstr(y, x, s)
+
+    def __drawLegend(self):
+        legend = ['[s]: ']
+        if self.downloadManager.isDownloading():
+            legend[0] += 'Stop downloading'
+        else:
+            legend[0] += 'Start downloading'
+
+        y, x = self.abs(self.size[0] - 1, self.size[1] - 3)
+        for l in legend:
+            l = ' ' + l + ' '
+            x -= len(l)
+            self.addstr(y, x, l)
+            x -= 2
 
     # Events
     def acceptsFirstResponder(self):
