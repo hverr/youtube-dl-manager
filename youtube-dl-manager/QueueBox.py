@@ -7,6 +7,17 @@ from VideoURLDialog import VideoURLDialog
 from DownloadConfiguration import DownloadConfiguration
 from MediaObject import MediaObject
 
+# Shared drawing code
+def drawLegend(self, y):
+    legend = ['[a] Add URL', '[x] Remove URL']
+
+    x = self.size[1] - 3
+    for l in legend:
+        l = " " + l + " "
+        x -= len(l)
+        self.addstr(y, x, l)
+        x -= 2
+
 class QueueBox(MultilineBox):
     def initialize(self):
         super(QueueBox, self).initialize()
@@ -43,6 +54,7 @@ class QueueBox(MultilineBox):
             self.addch(y + i, x, curses.ACS_VLINE, attr)
 
         self.__connectBoxes()
+        self.__drawLegend()
 
     def __connectBoxes(self):
         y, x = self.abs(self.size[0] - 1, 0)
@@ -81,6 +93,10 @@ class QueueBox(MultilineBox):
             return s
         s = s[:maxWidth - 3] + "..."
         return s
+
+    def __drawLegend(self):
+        y, x = self.abs(self.size[0] - 1, 0)
+        drawLegend(self, y)
 
     def respondsTo(self, key):
         if chr(key) in ['a']:
@@ -132,6 +148,7 @@ class DetailsScreen(Screen):
         self.clean()
         self.box()
         self.__connectBoxes()
+        self.__drawLegend()
         mvnl = self.__maximumValueNameLength()
 
         y, x = self.abs(1, 1)
@@ -181,6 +198,10 @@ class DetailsScreen(Screen):
             if l > s:
                 s = l
         return s
+
+    def __drawLegend(self):
+        y, x = self.abs(0, 0)
+        drawLegend(self, y)
 
     def queueBoxSelectionDidChange(self, index):
         self.update()
