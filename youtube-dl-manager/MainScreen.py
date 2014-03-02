@@ -98,17 +98,12 @@ class MainScreen(Screen):
         return True
 
     def respondsTo(self, key):
-        if chr(key) in ['a', 's']:
+        if chr(key) in ['s']:
             return True
         return super(MainScreen, self).respondsTo(key)
 
     def handleEvent(self, key):
-        if chr(key) == 'a':
-            self.videoURLDialog = VideoURLDialog(self)
-            self.beginModalScreen(self.videoURLDialog)
-            return True
-        
-        elif chr(key) == 's':
+        if chr(key) == 's':
             self.__toggleDownloading()
 
         return super(MainScreen, self).handleEvent(key)
@@ -166,9 +161,5 @@ class MainScreen(Screen):
         self.update()
         
 
-    # Download Configuration management
-    def addDownloadConfiguration(self, dc):
-        """Adds a DownloadConfiguration instance to the queue"""
-        self.downloadManager.addToQueue(dc)
 
     

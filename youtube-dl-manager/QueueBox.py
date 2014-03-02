@@ -2,6 +2,7 @@ import curses
 
 from Screen import Screen
 from MultilineBox import MultilineBox
+from VideoURLDialog import VideoURLDialog
 
 from DownloadConfiguration import DownloadConfiguration
 from MediaObject import MediaObject
@@ -80,6 +81,24 @@ class QueueBox(MultilineBox):
             return s
         s = s[:maxWidth - 3] + "..."
         return s
+
+    def respondsTo(self, key):
+        if chr(key) in ['a']:
+            return True
+        return super(QueueBox, self).respondsTo(key)
+
+    def handleEvent(self, key):
+        if chr(key) == 'a':
+            self.videoURLDialog = VideoURLDialog(self)
+            self.beginModalScreen(self.videoURLDialog)
+            return True
+
+        return super(QueueBox, self).handleEvent(key)
+
+    # Download Configuration management
+    def addDownloadConfiguration(self, dc):
+        """Adds a DownloadConfiguration instance to the queue"""
+        self.downloadManager.addToQueue(dc)
 
 class DetailsScreen(Screen):
     def __init__(self, parent, queueBox):
