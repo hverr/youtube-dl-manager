@@ -139,8 +139,8 @@ class DownloadManager(object):
             notifName = DownloadThread.NEW_OUTPUT_NOTIFICATION
             Notification.addObserver(self, notifName)
 
-            self.active = self.queue[-1]
-            del self.queue[-1]
+            self.active = self.queue[0]
+            del self.queue[0]
             self.__downloadThread = DownloadThread(self.active)
             self.__downloadThread.start()
 
