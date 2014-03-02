@@ -95,7 +95,7 @@ class MainScreen(Screen):
         self.addstr(y, x, s)
 
     def __drawLegend(self):
-        legend = ['[s]: ']
+        legend = ['[s] ']
         if self.downloadManager.isDownloading():
             legend[0] += 'Stop downloading'
         else:
