@@ -231,12 +231,14 @@ class Screen(object):
         if self.isFirstResponder() == False:
             raise Exception("Not in the responder chain")
 
+        self.parentResponder = None
         curFirst = None
         for child in self.children:
             if child.isFirstResponder():
                 curFirst = child
                 break
 
+        self.parentResponder = c
         if c == curFirst:
             return
 
@@ -244,7 +246,6 @@ class Screen(object):
             curFirst.resignFirstResponder(shouldUpdate)
         if c != None:
             c.makeFirstResponder(shouldUpdate)
-        self.parentResponder = c
 
     def __hasNextChildForFirstResponder(self):
         nextFirst = self.__getNextChildForFirstResponder()[1]
@@ -384,12 +385,13 @@ class Screen(object):
         endModalScreen. Multiple modal sessions can be up at the same
         time, but must be ended in the reverse order they were started.
         """
+        try:
+            self.__modalScreens.index(self.parentResponder)
+        except ValueError:
+            self.__parentResponderPreModalScreen = self.parentResponder
+        
         self.__modalScreens.append(screen)
         self.addChild(screen)
-
-        if self.parentResponder != None:
-            if self.__parentResponderPreModalScreen == None:
-                self.__parentResponderPreModalScreen = self.parentResponder
 
         self.makeChildFirstResponder(screen, False)
         self.update()
@@ -410,6 +412,8 @@ class Screen(object):
         else:
             self.makeChildFirstResponder(self.__parentResponderPreModalScreen,
                                          False)
+            self.__parentResponderPreModalScreen = None
+            
         self.removeChild(screen)
 
         # We want to update the whole terminal
