@@ -77,7 +77,10 @@ class QueueBox(MultilineBox):
         return s
 
     def __URLAtIndex(self, index, maxWidth):
-        dc = self.downloadManager.queue[index]
+        try:
+            dc = self.downloadManager.queue[index]
+        except IndexError: # Concurrency error emergency stop
+            return ''
         s = dc.mediaObject.url
         sl = len(s)
         if sl <= maxWidth:
@@ -87,7 +90,10 @@ class QueueBox(MultilineBox):
         return s
 
     def __filenameAtIndex(self, index, maxWidth):
-        dc = self.downloadManager.queue[index]
+        try:
+            dc = self.downloadManager.queue[index]
+        except IndexError: # Concurrency error emergency stop
+            return ''
         s = dc.filename
         sl = len(s)
         if sl <= maxWidth:
@@ -214,7 +220,10 @@ class DetailsScreen(Screen):
         index = self.queueBox.selectedLine
         if index >= len(self.queueBox.downloadManager.queue):
             return None
-        return self.queueBox.downloadManager.queue[index]
+        try:
+            return self.queueBox.downloadManager.queue[index]
+        except IndexError: # Concurrency emergency stop
+            return None
 
     def acceptsFirstResponder(self):
         return False
