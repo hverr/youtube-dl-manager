@@ -57,8 +57,11 @@ class StatusBox(Screen):
             startIndex = len(self.output) - numLines
             endIndex = startIndex + numLines
 
+        mpa = dict.fromkeys(range(32))
         for i in range(startIndex, endIndex):
-            self.addstr(y, x, self.output[i][0][:maxWidth])
+            s = self.output[i][0]
+            s = s.translate(mpa)
+            self.addstr(y, x, s[:maxWidth])
             y += 1
         
 
