@@ -1,3 +1,4 @@
+import sys
 import curses
 
 from Notification import Notification
@@ -95,7 +96,7 @@ class MainScreen(Screen):
         self.addstr(y, x, s)
 
     def __drawLegend(self):
-        legend = ['[s] ']
+        legend = ['[s] ', '[Q] Quit']
         if self.downloadManager.isDownloading():
             legend[0] += 'Stop downloading'
         else:
@@ -113,13 +114,15 @@ class MainScreen(Screen):
         return True
 
     def respondsTo(self, key):
-        if chr(key) in ['s']:
+        if chr(key) in ['s', 'q']:
             return True
         return super(MainScreen, self).respondsTo(key)
 
     def handleEvent(self, key):
         if chr(key) == 's':
             self.__toggleDownloading()
+        elif chr(key) == 'q':
+            self.__exitApplication()
 
         return super(MainScreen, self).handleEvent(key)
 
@@ -128,6 +131,18 @@ class MainScreen(Screen):
             self.downloadManager.startDownloading()
         else:
             self.downloadManager.stopDownloading()
+
+    def __exitApplication(self):
+        title = "Are you sure you want to exit?"
+        msg = "All download processes will be forcefully stopped."
+        a = MessageAlert(self, title, msg)
+
+        b = Button("Quit", self.__continueExit, Button.SHORTCUT_ENTER)
+        a.addButton(b)
+        b = Button("Cancel", self.__endAlert, 'c')
+        a.addButton(b)
+
+        self.beginModalScreen(a)
 
     def __handleException(self, exception):
         t = "An error occurred."
@@ -142,6 +157,12 @@ class MainScreen(Screen):
             return
                         
         self.beginModalScreen(alert)
+
+    def __continueExit(self):
+        sys.exit(0)
+
+    def __endAlert(self):
+        self.endModalScreen(self.activeModalSession())
 
     def __handleErrorOK(self):
         self.endModalScreen(self.activeModalSession())
