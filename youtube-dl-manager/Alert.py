@@ -140,6 +140,7 @@ class Alert(Screen):
                     pass
 
         if buttonIsFirstResponder:
+            self.layout()
             self.makeChildFirstResponder(None, True)
         else:
             super(Alert, self).makeFirstResponder(True)
