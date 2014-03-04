@@ -4,6 +4,7 @@ import curses
 from Notification import Notification
 
 import QueueBox
+import DoneBox
 from StatusBox import StatusBox
 from Screen import Screen
 from Button import Button
@@ -36,6 +37,12 @@ class MainScreen(Screen):
         self.statusBox = StatusBox(self, (1, 1))
         self.addChild(self.statusBox)
 
+        self.doneBox = DoneBox.DoneBox(self, (1, 1))
+        self.doneBox.downloadManager = self.downloadManager
+        self.doneBoxDetails = DoneBox.DetailsScreen(self, self.doneBox)
+        self.addChild(self.doneBox)
+        self.addChild(self.doneBoxDetails)
+
         self.automaticallyCycleThroughChildren = True
 
         self.__pendingAlert = None
@@ -58,15 +65,26 @@ class MainScreen(Screen):
     def layout(self):
         h, w = (i - 2 for i in self.size)
 
-        qbdHeight = self.queueBoxDetails.size[0]
-        heightLeft = h - qbdHeight
+        qbdHeight = self.queueBoxDetails.size[0] - 1
+        dbdHeight = self.doneBoxDetails.size[0] - 1
+        heightLeft = h - qbdHeight - dbdHeight
         
-        self.queueBox.size = (int(heightLeft/3), w)
+        self.queueBox.size = [int(heightLeft/3), w]
 
         y = self.queueBox.size[0] + self.queueBoxDetails.size[0]
         x = 1
-        self.statusBox.origin = (y, x)
+        self.statusBox.origin = [y, x]
         self.statusBox.size = (int(heightLeft/3), w)
+
+        y += self.statusBox.size[0]
+        self.doneBox.size = (int(heightLeft/3), w)
+        self.doneBox.origin = [y, x]
+
+        emptyHeight = h - y - self.doneBox.size[0] - dbdHeight + 1
+        
+        self.queueBox.size[0] += emptyHeight
+        self.statusBox.origin[0] += emptyHeight
+        self.doneBox.origin[0] += emptyHeight
 
         
         
