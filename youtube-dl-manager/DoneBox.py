@@ -2,6 +2,7 @@ import curses
 
 from Screen import Screen
 from MultilineBox import MultilineBox
+from VideoURLDialog import VideoURLDialog
 
 # Shared drawing code
 def drawLegend(self, y):
@@ -113,9 +114,26 @@ class DoneBox(MultilineBox):
             return True
 
         elif chr(key) == 'r':
+            self.__readdItemToQueue()
             return True
 
         return super(DoneBox, self).handleEvent(key)
+
+    def __readdItemToQueue(self):
+        si = self.selectedLine
+        try:
+            dc = self.downloadManager.done[si]
+        except:
+            return
+        
+        self.videoURLDialog = VideoURLDialog(self)
+        self.beginModalScreen(self.videoURLDialog)
+        self.videoURLDialog.textField.setValue(dc.mediaObject.url)
+        self.videoURLDialog.update()
+
+    # Download Configuration management
+    def addDownloadConfiguration(self, dc):
+        self.downloadManager.addToQueue(dc)
 
 class DetailsScreen(Screen):
     def __init__(self, parent, doneBox):
