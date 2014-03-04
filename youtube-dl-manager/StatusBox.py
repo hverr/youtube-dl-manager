@@ -37,7 +37,8 @@ class StatusBox(Screen):
             d = "downloading"
             self.addstr(y, x, d)
             if self.currentObject != None:
-                self.addstr(y, x + len(d), " '" + self.currentObject + "'")
+                mw = self.size[1] - 6 - len(s) - len(d) - 4
+                self.addstr(y, x + len(d), " '" + self.currentObject[:mw] + "'")
         else:
             raise Exception("Invalid status")
 
@@ -48,7 +49,7 @@ class StatusBox(Screen):
         y, x = self.abs(1, 1)
         maxWidth = self.size[1] - 2
 
-        numLines = self.size[0]
+        numLines = self.size[0] - 2
         if numLines > len(self.output):
             startIndex = 0
             endIndex = len(self.output)
@@ -57,7 +58,7 @@ class StatusBox(Screen):
             endIndex = startIndex + numLines
 
         for i in range(startIndex, endIndex):
-            self.addstr(y, x, self.output[i][0])
+            self.addstr(y, x, self.output[i][0][:maxWidth])
             y += 1
         
 
