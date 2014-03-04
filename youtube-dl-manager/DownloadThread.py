@@ -31,13 +31,16 @@ class DownloadThread(Thread):
 
     def run(self):
 
+        dc = self.downloadConfiguration
         mo = self.downloadConfiguration.mediaObject
+        mf = self.downloadConfiguration.mediaFormat
 
         self.output.append(("Starting download from " + mo.url, 0))
         self.__notifyNewOutput()
+
+        mo.delegate = self
+        mo.downloadMedia(dc.filename, mf.id)
         
-        time.sleep(3)
-        curses.beep()
         self.__notifyDone(None)
         pass
 
@@ -48,3 +51,12 @@ class DownloadThread(Thread):
     def __notifyNewOutput(self):
         n = Notification(self.NEW_OUTPUT_NOTIFICATION, self)
         Notification.post(n)
+
+    # Media Object delegate
+    def mediaObjectMessage(self, msg):
+        self.output.append((msg, 0))
+        self.__notifyNewOutput()
+
+    def mediaObjectError(self, err):
+        self.output.append((err, 1))
+        self.__notifyNewOutput()
