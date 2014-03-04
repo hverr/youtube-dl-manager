@@ -61,6 +61,12 @@ class DownloadManager(object):
                 self.active.addToTreeBuilder(tb)
             tb.end('queue')
 
+            # Done
+            tb.start('done')
+            for dc in self.done:
+                dc.addToTreeBuilder(tb)
+            tb.end('done')
+
             root = tb.close()
             tree = ET.ElementTree(root)
             tree.write(self.filename)
@@ -80,6 +86,8 @@ class DownloadManager(object):
                     continue
                 if c.tagName == 'queue':
                     self.__parseQueue(c)
+                if c.tagName == 'done':
+                    self.__parseDone(c)
 
 
     def __parseQueue(self, queueElem):
@@ -91,6 +99,16 @@ class DownloadManager(object):
                 dc = DownloadConfiguration.fromXMLElement(c)
                 if dc != None:
                     self.queue.append(dc)
+
+    def __parseDone(self, doneElem):
+        cn = doneElem.childNodes
+        for c in cn:
+            if c.nodeType != MD.Node.ELEMENT_NODE:
+                continue
+            if c.tagName == DownloadConfiguration.XML_TAG:
+                dc = DownloadConfiguration.fromXMLElement(c)
+                if dc != None:
+                    self.done.append(dc)
 
     # Managing queue
     def addToQueue(self, dc):
