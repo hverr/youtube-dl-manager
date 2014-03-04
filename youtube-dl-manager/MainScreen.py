@@ -57,12 +57,16 @@ class MainScreen(Screen):
     # Drawing
     def layout(self):
         h, w = (i - 2 for i in self.size)
-        self.queueBox.size = (int(h/3), w)
+
+        qbdHeight = self.queueBoxDetails.size[0]
+        heightLeft = h - qbdHeight
+        
+        self.queueBox.size = (int(heightLeft/3), w)
 
         y = self.queueBox.size[0] + self.queueBoxDetails.size[0]
         x = 1
         self.statusBox.origin = (y, x)
-        self.statusBox.size = (8, w)
+        self.statusBox.size = (int(heightLeft/3), w)
 
         
         
