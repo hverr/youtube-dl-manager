@@ -209,6 +209,12 @@ class DownloadManager(object):
         if notif.sender != self.__downloadThread:
             return
 
+        if self.active != None:
+            with self.__lock:
+                self.done.append(self.active)
+                self.active = None
+                self.synchronize()
+
         self.__downloadThread = None
         self.__downloadNextItem()
 
