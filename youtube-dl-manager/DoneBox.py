@@ -5,7 +5,7 @@ from MultilineBox import MultilineBox
 
 # Shared drawing code
 def drawLegend(self, y):
-    legend = ['[c] Clear', '[r] Retry']
+    legend = ['[c] Clear', '[r] Readd to queue']
 
     x = self.size[1] - 3
     x = self.abs(0, x)[1]
