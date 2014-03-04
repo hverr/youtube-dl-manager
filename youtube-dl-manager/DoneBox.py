@@ -101,6 +101,22 @@ class DoneBox(MultilineBox):
         y, x = self.abs(self.size[0] - 1, 0)
         drawLegend(self, y)
 
+    def respondsTo(self, key):
+        if chr(key) in ['c', 'r']:
+            return True
+        return super(DoneBox, self).respondsTo(key)
+
+    def handleEvent(self, key):
+        if chr(key) == 'c':
+            self.downloadManager.clearDone()
+            self.update()
+            return True
+
+        elif chr(key) == 'r':
+            return True
+
+        return super(DoneBox, self).handleEvent(key)
+
 class DetailsScreen(Screen):
     def __init__(self, parent, doneBox):
         """Initializes a details screen attached to the done box.

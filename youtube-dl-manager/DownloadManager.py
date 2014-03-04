@@ -136,6 +136,12 @@ class DownloadManager(object):
                 self.__removalConfiguration = dc
                 self.__continueRemoval()
 
+    def clearDone(self):
+        """Removes all configurations from the done list."""
+        with self.__lock:
+            self.done.clear()
+            self.synchronize()
+
     def __showRemovalConfirmation(self, index, alertParent):
         with self.__lock:
             if index >= len(self.queue):
