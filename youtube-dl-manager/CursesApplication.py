@@ -1,6 +1,5 @@
 import sys
 import curses
-import time
 
 from InitializationScreen import InitializationScreen
 
@@ -54,9 +53,6 @@ class CursesApplication(object):
                 self.__handleTerminalResize()
                 continue
 
-            # Timing for debugging purposes
-            time1 = time.time()
-            
             r = self.mainScreen
             responders = [r]
             while True: 
@@ -75,13 +71,6 @@ class CursesApplication(object):
                 if r.respondsTo(c):
                     r.handleEvent(c)
                     break
-                
-            # Next key
-            time2 = time.time()
-
-            size = stdscr.getmaxyx()
-            s = 'Handling key %d took %0.3f ms' % (c, ((time2-time1)*1000.0))
-            stdscr.addstr(size[0]-1, 0, s)
 
     def __handleTerminalResize(self, shouldRedraw=True):
         newSize = self.mainScreen.stdscr.getmaxyx()
